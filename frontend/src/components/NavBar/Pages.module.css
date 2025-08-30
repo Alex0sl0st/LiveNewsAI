@@ -1,0 +1,44 @@
+.pagesBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 0;
+}
+
+/* .pagesBlock li {
+  list-style: none;
+
+  padding: 0 8px;
+  transition: color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pagesBlock li:hover {
+  box-shadow: 0 2px 2px -2px rgba(var(--color-primary-rgb), 1);
+} 
+*/
+
+.pagesBlock li {
+  list-style: none;
+  padding: 2px 8px;
+  position: relative; /* потрібно для ::after */
+  cursor: pointer;
+}
+
+.pagesBlock li::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: rgb(var(--color-primary-rgb));
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.pagesBlock li:hover::after {
+  width: 100%;
+  left: 0;
+}

@@ -1,7 +1,24 @@
 :root {
   --font-base: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  --color-primary: #3b82f6;
+  --color-primary-rgb: 59, 130, 246;
+  --color-primary-hover: #2563eb;
+
+  --color-secondary: rgb(99, 102, 241);
+  --color-secondary-rgb: 99, 102, 241;
+
+  --color-background: #ffffff;
+  --color-text: #111827;
+
+  --color-text-bright: #ffffff;
+
+  --color-accent: #06b6d4;
 }
 
 body {
   font-family: var(--font-base);
+  margin: 0;
+
+  color: var(--color-text);
 }
