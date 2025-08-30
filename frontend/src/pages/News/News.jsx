@@ -1,6 +1,24 @@
 import styles from "./News.module.css";
+import { useState, useEffect } from "react";
+import { ENDPOINTS } from "../../api/config";
 
 function News() {
+  const [news, setNews] = useState([]);
+
+  async function getAllNews(url = ENDPOINTS.allNews) {
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      setNews(data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  useEffect(() => {
+    getAllNews();
+  }, []);
+
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.title}>📰 News are coming soon!</h1>
@@ -9,7 +27,12 @@ function News() {
       </p>
 
       <div>
-        <h2>Summery:</h2>
+        <h2>
+          Summery:
+          {news.map((el, i) => (
+            <p key={i}>{el}</p>
+          ))}
+        </h2>
       </div>
 
       <div className={styles.cards}>
