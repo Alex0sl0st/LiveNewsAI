@@ -8,6 +8,11 @@ function News() {
   async function getAllNews(url = ENDPOINTS.allNews) {
     try {
       const res = await fetch(url);
+
+      if (!res.ok) {
+        setNews([]);
+        throw new Error("Failed to fetch news");
+      }
       const data = await res.json();
       setNews(data);
     } catch (err) {
@@ -27,12 +32,10 @@ function News() {
       </p>
 
       <div>
-        <h2>
-          Summery:
-          {news.map((el, i) => (
-            <p key={i}>{el}</p>
-          ))}
-        </h2>
+        <h2>Summery:</h2>
+        {news.map((el, i) => (
+          <p key={i}>{el}</p>
+        ))}
       </div>
 
       <div className={styles.cards}>

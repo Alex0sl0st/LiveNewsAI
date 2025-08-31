@@ -1,18 +1,23 @@
 import express from "express";
 import cors from "cors";
+import mainRouter from "./routes/index.js";
 
 const app = express();
 const PORT = 5000;
 
 app.use(cors());
+app.use(express.json());
 
-function getAllNews(req, res) {
-  res.json(["News1", "News2"]);
-}
+app.use("/api", mainRouter);
 
-app.get("/api/news", getAllNews);
+app.use((req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
 
-app.use((req, res) => res.send("Not found"));
+app.use((err, req, res, next) => {
+  console.error("Error:", err.stack);
+  res.status(500).json({ error: "Internal server error" });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
