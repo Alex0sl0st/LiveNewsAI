@@ -1,9 +1,11 @@
 import { newsService } from "../services/newsService.js";
+import { externalNewsService } from "../services/externalNewsService.js";
 
-function getNews(req, res) {
+async function getNews(req, res) {
   try {
-    const news = newsService.getAllNews();
-    res.json(news);
+    // const news = newsService.getAllNews();
+    const news = newsService.tempGetSavedNews().then((news) => res.json(news));
+    // res.json(news);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch news" });
   }
@@ -24,6 +26,19 @@ function getNewsById(req, res) {
   }
 }
 
+function loadNews(req, res) {
+  externalNewsService.fetchNewsFromNewsAPI().then(async (news) => {
+    await newsService.tempSaveNews(news);
+    res.json(news);
+  });
+}
+
+function chatGptAPI(req, res) {
+  externalNewsService
+    .fetchChatGptAPI(req.body.newsText)
+    .then((answer) => res.json(answer));
+}
+
 function createNews(req, res) {
   try {
     const { title, url } = req.body;
@@ -39,4 +54,4 @@ function createNews(req, res) {
   }
 }
 
-export { getNews, getNewsById, createNews };
+export { getNews, getNewsById, createNews, loadNews, chatGptAPI };

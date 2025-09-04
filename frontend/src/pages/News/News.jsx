@@ -5,6 +5,35 @@ import { ENDPOINTS } from "../../api/config";
 function News() {
   const [news, setNews] = useState([]);
 
+  const [newsSummery, setNewsSummery] = useState("");
+
+  async function updateNewsSummery(url = ENDPOINTS.chatGptAPI) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          newsText: news.articles
+            ? news.articles.reduce(
+                (acc, curr) => acc + "\n\n" + JSON.stringify(curr),
+                ""
+              )
+            : "",
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Помилка при відправці новин");
+      }
+
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error("❌ Fetch error:", err);
+      return null;
+    }
+  }
+
   async function getAllNews(url = ENDPOINTS.allNews) {
     try {
       const res = await fetch(url);
@@ -33,9 +62,18 @@ function News() {
 
       <div>
         <h2>Summery:</h2>
-        {news.map((el, i) => (
-          <p key={i}>{el}</p>
-        ))}
+        {news.articles &&
+          news.articles.map((el, i) => <p key={i}>{el.description}</p>)}
+
+        <h1>Short summery:</h1>
+        <button
+          onClick={() =>
+            updateNewsSummery().then((summery) => setNewsSummery(summery))
+          }
+        >
+          Update summery
+        </button>
+        <p>{newsSummery}</p>
       </div>
 
       <div className={styles.cards}>
