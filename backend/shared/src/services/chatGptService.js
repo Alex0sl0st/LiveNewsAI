@@ -10,7 +10,7 @@ class ChatGptService {
   }
 
   async fetchChatGptAPI(newsText) {
-    console.log(newsText);
+    // console.log(newsText, 123);
     try {
       const completion = await this.openai.chat.completions.create({
         model: "gpt-4o-mini", // швидший і дешевший, але можеш лишити gpt-4o для кращої якості

@@ -10,10 +10,6 @@ export const newsSourcesConfig = {
       everything: "/everything",
       sources: "/sources",
     },
-    rateLimit: {
-      requestsPerDay: 100,
-      requestsPerHour: 10,
-    },
   },
 };
 
