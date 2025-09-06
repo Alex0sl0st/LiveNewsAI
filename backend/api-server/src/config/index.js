@@ -30,7 +30,5 @@ export default {
   },
 };
 
-// Експорт функцій для роботи з джерелами
 export { getSourceConfig, getAvailableSources };
 export { newsSourcesConfig };
-

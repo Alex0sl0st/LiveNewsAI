@@ -1,40 +1,12 @@
-import { newsSourcesConfig, getSourceConfig } from "../config/external.js";
-import axios from "axios";
+import "dotenv/config";
+
 import OpenAI from "openai";
 
-class ExternalNewsService {
+class ChatGptService {
   constructor() {
-    this.newsApi = getSourceConfig("newsApi");
-
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-  }
-
-  async fetchNewsFromNewsAPI(topic = "latest") {
-    try {
-      const {
-        baseUrl,
-        apiKey,
-        endpoints: { everything },
-      } = this.newsApi;
-
-      const params = {
-        q: topic,
-        language: "en",
-        pageSize: 10,
-        apiKey: apiKey,
-      };
-
-      const { data: news } = await axios.get(`${baseUrl}${everything}`, {
-        params,
-        timeout: 5000,
-      });
-      console.log(news);
-      return news;
-    } catch (err) {
-      console.log("Error fetching news :", err.message);
-    }
   }
 
   async fetchChatGptAPI(newsText) {
@@ -67,6 +39,6 @@ class ExternalNewsService {
   }
 }
 
-const externalNewsService = new ExternalNewsService();
+const chatGptService = new ChatGptService();
 
-export { externalNewsService, ExternalNewsService };
+export { chatGptService, ChatGptService };
