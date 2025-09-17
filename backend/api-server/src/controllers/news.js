@@ -1,4 +1,5 @@
 import { newsService } from "../services/newsService.js";
+import { newsService as newsService2 } from "../shared.js";
 import { newsStorageService } from "../shared.js";
 import { chatGptService } from "../shared.js";
 
@@ -46,6 +47,10 @@ function createNews(req, res) {
   } catch (error) {
     res.status(500).json({ error: "Failed to create news" });
   }
+}
+
+export function getAllNewsFromDb(req, res) {
+  newsService2.getAll().then((news) => res.json(news));
 }
 
 export { getNews, getNewsById, createNews, chatGptAPI };
