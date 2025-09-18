@@ -6,10 +6,10 @@ export async function query(sql, params = []) {
     const result = await pool.query(sql, params);
     const duration = Date.now() - start;
 
-    console.log("✅ SQL:", sql, "⏱", duration + "ms");
-    return result;
+    // console.log("✅ SQL:", sql, "⏱", duration + "ms");
+    return { success: true, data: result };
   } catch (err) {
-    console.error("❌ DB ERROR:", err.message);
-    throw err;
+    console.error("❌ DB ERROR:", err);
+    return { success: false, data: null, err };
   }
 }

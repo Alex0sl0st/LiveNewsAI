@@ -10,7 +10,13 @@ class NewsService {
     const result = await this.query(
       "SELECT * FROM news ORDER BY created_at DESC"
     );
-    return result.rows.map((row) => new News(row));
+
+    if (result.success) {
+      const { data } = result;
+      return data.rows.map((row) => new News(row));
+    } else {
+      return [];
+    }
   }
 
   async create({ title, content }) {
