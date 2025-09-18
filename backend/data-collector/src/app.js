@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 
 import { externalNewsService } from "./services/externalNewsService.js";
-import { newsStorageService, newsService } from "./shared.js";
+import { newsService } from "./shared.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -13,7 +13,6 @@ function startCollecting(req, res) {
       newsService.create({ title, content })
     );
     const results = await Promise.all(newsPromises);
-    // newsStorageService.store(news);
     res.status(200).send("<h1>Started Successful</h1>");
   });
 }
