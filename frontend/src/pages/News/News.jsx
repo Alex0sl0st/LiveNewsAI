@@ -13,8 +13,8 @@ function News() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          newsText: news.articles
-            ? news.articles.reduce(
+          newsText: news
+            ? news.reduce(
                 (acc, curr) => acc + "\n\n" + JSON.stringify(curr),
                 ""
               )
@@ -62,8 +62,7 @@ function News() {
 
       <div>
         <h2>Summery:</h2>
-        {news.articles &&
-          news.articles.map((el, i) => <p key={i}>{el.description}</p>)}
+        {news && news.map((el, i) => <p key={i}>{el.content}</p>)}
 
         <h1>Short summery:</h1>
         <button

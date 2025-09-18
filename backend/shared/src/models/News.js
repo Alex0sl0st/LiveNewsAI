@@ -1,5 +1,11 @@
+import { NEWS_COLUMNS as COL } from "../constants/database.js";
 export class News {
-  constructor({ id, title, content, created_at }) {
+  constructor({
+    [COL.ID]: id,
+    [COL.TITLE]: title,
+    [COL.CONTENT]: content,
+    [COL.CREATED_AT]: created_at,
+  }) {
     this.id = id;
     this.title = title;
     this.content = content;
@@ -12,6 +18,15 @@ export class News {
       title: this.title,
       content: this.content,
       createdAt: this.createdAt,
+    };
+  }
+
+  toDatabaseFormat() {
+    return {
+      [COL.ID]: this.id,
+      [COL.TITLE]: this.title,
+      [COL.CONTENT]: this.content,
+      [COL.CREATED_AT]: this.createdAt,
     };
   }
 
