@@ -3,7 +3,7 @@ export const NEWS_COLUMNS = {
   TITLE: "title",
   CONTENT: "content",
   DESCRIPTION: "description",
-  SUMMERY: "SUMMERY",
+  SUMMARY: "summary",
   SOURCE_NAME: "source_name",
   SOURCE_URL: "source_url",
   PUBLISHED_AT: "published_at",
