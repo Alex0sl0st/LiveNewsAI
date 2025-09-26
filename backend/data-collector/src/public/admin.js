@@ -1,10 +1,12 @@
 const getAll = document.querySelector("#getAll");
+const createNewsAPI = document.querySelector("#createNewsAPI");
+
 const gotDataContainer = document.querySelector("#gotDataContainer");
 const lastMassageContainer = document.querySelector("#lastMassageContainer");
 addLastMassage();
 
 function addLastMassage(massage = "") {
-  lastMassageContainer.innerHTML = `<h2>Last Massage:${massage}</h2>`;
+  lastMassageContainer.innerHTML = `<h2>Last Massage:<br>${massage}</h2>`;
 }
 
 function getNewsInnerHTML(news) {
@@ -25,11 +27,11 @@ function getNewsInnerHTML(news) {
   return newsInnerHTML;
 }
 
-function getAllNews() {
+function postNews(action) {
   fetch("/admin/newsAction", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getAll" }),
+    body: JSON.stringify({ action }),
   })
     .then((res) => res.json())
     .then((data) => {
@@ -51,4 +53,9 @@ function getAllNews() {
     });
 }
 
-getAll.addEventListener("click", getAllNews);
+getAll.addEventListener("click", () => {
+  postNews("getAll");
+});
+createNewsAPI.addEventListener("click", () => {
+  postNews("createNewsAPI");
+});

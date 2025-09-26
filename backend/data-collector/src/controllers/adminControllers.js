@@ -1,6 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { newsService } from "../shared.js";
+import { newsManagerService } from "../services/NewsManagerService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +37,10 @@ export function doNewsAction(req, res) {
     newsService.getAll().then((news) => {
       resNews({ news, massage: "getAll" });
     });
+  } else if (action === "createNewsAPI") {
+    newsManagerService
+      .createNewsFromNewsAPI()
+      .then((r) => resNews({ massage: "Create NewsAPI", resType: "action" }));
   } else {
     resNews({
       news: [],
