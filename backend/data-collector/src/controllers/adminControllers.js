@@ -41,6 +41,12 @@ export function doNewsAction(req, res) {
     newsManagerService
       .createNewsFromNewsAPI()
       .then((r) => resNews({ massage: "Create NewsAPI", resType: "action" }));
+  } else if (action === "deleteDuplicates") {
+    newsService
+      .deleteDuplicates()
+      .then((r) =>
+        resNews({ massage: "Delete Duplicates", resType: "action" })
+      );
   } else {
     resNews({
       news: [],

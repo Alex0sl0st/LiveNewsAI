@@ -1,5 +1,6 @@
 const getAll = document.querySelector("#getAll");
 const createNewsAPI = document.querySelector("#createNewsAPI");
+const deleteDuplicates = document.querySelector("#deleteDuplicates");
 
 const gotDataContainer = document.querySelector("#gotDataContainer");
 const lastMassageContainer = document.querySelector("#lastMassageContainer");
@@ -58,4 +59,7 @@ getAll.addEventListener("click", () => {
 });
 createNewsAPI.addEventListener("click", () => {
   postNews("createNewsAPI");
+});
+deleteDuplicates.addEventListener("click", () => {
+  postNews("deleteDuplicates");
 });

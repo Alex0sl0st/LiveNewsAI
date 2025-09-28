@@ -40,9 +40,35 @@ class NewsService {
     }
   }
 
+  async deleteDuplicates(duplicationType = COL.CONTENT) {
+    const result = await this.query(`
+      DELETE FROM ${NEWS_TABLE}
+      WHERE id IN (
+        SELECT id
+        FROM (
+          SELECT id,
+                 ROW_NUMBER() OVER (PARTITION BY ${duplicationType} ORDER BY id ASC) AS row_num
+          FROM ${NEWS_TABLE}
+        ) t
+        WHERE t.row_num > 1
+      )
+    `);
+
+    if (result.success) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async delete(id) {
-    await this.query("DELETE FROM news WHERE id = $1", [id]);
-    return true;
+    const result = await this.query("DELETE FROM news WHERE id = $1", [id]);
+
+    if (result.success) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
