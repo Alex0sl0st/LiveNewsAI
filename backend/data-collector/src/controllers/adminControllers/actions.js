@@ -11,6 +11,8 @@ export function doNewsAction(req, res) {
     handlers.deleteDuplicates(res);
   } else if (type === "sourceBBC") {
     handlers.sourceBBC(res);
+  } else if (type === "deleteAllResetIds") {
+    handlers.deleteAllResetIds(res);
   } else {
     handlers.unknown(res);
   }

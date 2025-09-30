@@ -2,8 +2,10 @@ class AdminActions {
   constructor() {
     this.getAll = document.querySelector("#getAll");
     this.createNewsAPI = document.querySelector("#createNewsAPI");
-    this.deleteDuplicates = document.querySelector("#deleteDuplicates");
     this.sourceBBC = document.querySelector("#sourceBBC");
+
+    this.deleteDuplicates = document.querySelector("#deleteDuplicates");
+    this.deleteAllResetIds = document.querySelector("#deleteAllResetIds");
 
     this.getAction = (type, payload = {}) => ({
       type,
@@ -18,11 +20,15 @@ class AdminActions {
     this.createNewsAPI.addEventListener("click", () =>
       handleAction(this.getAction("createNewsAPI"))
     );
+    this.sourceBBC.addEventListener("click", () =>
+      handleAction(this.getAction("sourceBBC"))
+    );
+
     this.deleteDuplicates.addEventListener("click", () =>
       handleAction(this.getAction("deleteDuplicates"))
     );
-    this.sourceBBC.addEventListener("click", () =>
-      handleAction(this.getAction("sourceBBC"))
+    this.deleteAllResetIds.addEventListener("click", () =>
+      handleAction(this.getAction("deleteAllResetIds"))
     );
   }
 }

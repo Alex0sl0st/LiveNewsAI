@@ -37,6 +37,12 @@ export function sourceBBC(res) {
   });
 }
 
+export function deleteAllResetIds(res) {
+  newsService.deleteAllResetIds().then(() => {
+    sendResponse(res, { massage: "deleteAllResetIds", resType: "result" });
+  });
+}
+
 export function unknown(res) {
   sendResponse(res, {
     news: [],

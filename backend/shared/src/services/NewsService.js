@@ -61,6 +61,18 @@ class NewsService {
     }
   }
 
+  async deleteAllResetIds() {
+    const result = await this.query(
+      `TRUNCATE TABLE ${NEWS_TABLE} RESTART IDENTITY`
+    );
+
+    if (result.success) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async delete(id) {
     const result = await this.query("DELETE FROM news WHERE id = $1", [id]);
 
