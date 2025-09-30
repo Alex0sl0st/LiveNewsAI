@@ -1,65 +1,72 @@
-const getAll = document.querySelector("#getAll");
-const createNewsAPI = document.querySelector("#createNewsAPI");
-const deleteDuplicates = document.querySelector("#deleteDuplicates");
+import adminActions from "./js/main.js";
 
-const gotDataContainer = document.querySelector("#gotDataContainer");
-const lastMassageContainer = document.querySelector("#lastMassageContainer");
-addLastMassage();
+// const getAll = document.querySelector("#getAll");
+// const createNewsAPI = document.querySelector("#createNewsAPI");
+// const deleteDuplicates = document.querySelector("#deleteDuplicates");
+// const sourceBBC = document.querySelector("#sourceBBC");
 
-function addLastMassage(massage = "") {
-  lastMassageContainer.innerHTML = `<h2>Last Massage:<br>${massage}</h2>`;
-}
+// const gotDataContainer = document.querySelector("#gotDataContainer");
+// const lastMassageContainer = document.querySelector("#lastMassageContainer");
+// addLastMassage();
 
-function getNewsInnerHTML(news) {
-  let newsInnerHTML = "";
+// function addLastMassage(massage = "") {
+//   lastMassageContainer.innerHTML = `<h2>Last Massage:<br>${massage}</h2>`;
+// }
 
-  newsInnerHTML += `<h3><strong>Title:</strong> ${news.title}</h3>`;
+// function getNewsInnerHTML(news) {
+//   let newsInnerHTML = "";
 
-  for (const key in news) {
-    const value = news[key];
+//   newsInnerHTML += `<h3><strong>Title:</strong> ${news.title}</h3>`;
 
-    if (key !== "title") {
-      newsInnerHTML += `<p><b class="">${key}:</b> ${value}</p>`; // uppercase-text
-    }
-  }
+//   for (const key in news) {
+//     const value = news[key];
 
-  // newsInnerHTML += "<hr>";
+//     if (key !== "title") {
+//       newsInnerHTML += `<p><b class="">${key}:</b> ${value}</p>`; // uppercase-text
+//     }
+//   }
 
-  return newsInnerHTML;
-}
+//   // newsInnerHTML += "<hr>";
 
-function postNews(action) {
-  fetch("/admin/newsAction", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      const { data: gotNews, success, resType, massage } = data;
+//   return newsInnerHTML;
+// }
 
-      addLastMassage(massage);
+// function postNews(action) {
+//   fetch("/admin/newsAction", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ action }),
+//   })
+//     .then((res) => res.json())
+//     .then((data) => {
+//       const { data: gotNews, success, resType, massage } = data;
 
-      if (success && resType == "news") {
-        gotDataContainer.innerHTML = "";
+//       addLastMassage(massage);
 
-        gotNews.forEach((news) => {
-          const singleNewsBlock = document.createElement("div");
-          singleNewsBlock.classList.add("singleNewsBlock");
-          singleNewsBlock.innerHTML = getNewsInnerHTML(news);
+//       if (success && resType == "news") {
+//         gotDataContainer.innerHTML = "";
 
-          gotDataContainer.appendChild(singleNewsBlock); // prepend
-        });
-      }
-    });
-}
+//         gotNews.forEach((news) => {
+//           const singleNewsBlock = document.createElement("div");
+//           singleNewsBlock.classList.add("singleNewsBlock");
+//           singleNewsBlock.innerHTML = getNewsInnerHTML(news);
 
-getAll.addEventListener("click", () => {
-  postNews("getAll");
-});
-createNewsAPI.addEventListener("click", () => {
-  postNews("createNewsAPI");
-});
-deleteDuplicates.addEventListener("click", () => {
-  postNews("deleteDuplicates");
-});
+//           gotDataContainer.appendChild(singleNewsBlock); // prepend
+//         });
+//       }
+//     });
+// }
+
+// getAll.addEventListener("click", () => {
+//   postNews("getAll");
+// });
+// createNewsAPI.addEventListener("click", () => {
+//   postNews("createNewsAPI");
+// });
+// deleteDuplicates.addEventListener("click", () => {
+//   postNews("deleteDuplicates");
+// });
+
+// sourceBBC.addEventListener("click", () => {
+//   postNews("sourceBBC");
+// });

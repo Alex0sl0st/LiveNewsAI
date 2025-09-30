@@ -1,6 +1,11 @@
 import "dotenv/config";
 
 export const newsSourcesConfig = {
+  bbc: {
+    name: "BBC",
+    urls: { rss: "https://feeds.bbci.co.uk/news/rss.xml" },
+  },
+
   newsApi: {
     name: "NewsAPI.org",
     baseUrl: "https://newsapi.org/v2",

@@ -1,5 +1,6 @@
 import { externalNewsService } from "./externalNewsService.js";
 import { newsService } from "../shared.js";
+import { bbcNewsSource } from "./sources/BbcNewsSource.js";
 
 class NewsManagerService {
   constructor() {
@@ -19,6 +20,16 @@ class NewsManagerService {
     const news = await this.externalNewsService.fetchNewsFromNewsAPI(topic);
 
     await this.createNews(news);
+  }
+
+  async createBbcNews() {
+    const news = await bbcNewsSource.fetchNews();
+
+    const newsPromises = news.map(({ title, content }) =>
+      this.newsService.create({ title, content })
+    );
+
+    await Promise.all(newsPromises);
   }
 }
 

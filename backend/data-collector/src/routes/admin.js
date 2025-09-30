@@ -1,6 +1,8 @@
 import express from "express";
-import { getAdminPage } from "../controllers/adminControllers.js";
-import { doNewsAction } from "../controllers/adminControllers.js";
+import {
+  getAdminPage,
+  doNewsAction,
+} from "../controllers/adminControllers/index.js";
 
 const router = express.Router();
 
