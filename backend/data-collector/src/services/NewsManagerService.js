@@ -25,8 +25,8 @@ class NewsManagerService {
   async createBbcNews() {
     const news = await bbcNewsSource.fetchNews();
 
-    const newsPromises = news.map(({ title, content }) =>
-      this.newsService.create({ title, content })
+    const newsPromises = news.map(({ title, content, sourceUrl }) =>
+      this.newsService.create({ title, content, sourceUrl })
     );
 
     await Promise.all(newsPromises);

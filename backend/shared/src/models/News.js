@@ -9,6 +9,7 @@ export class News {
     [COL.SOURCE_URL]: source_url,
     [COL.PUBLISHED_AT]: published_at,
     [COL.CREATED_AT]: created_at,
+    [COL.IMAGES]: images,
   }) {
     this.id = id;
     this.title = title;
@@ -18,6 +19,7 @@ export class News {
     this.sourceUrl = source_url;
     this.publishedAt = published_at;
     this.createdAt = created_at;
+    this.images = images;
   }
 
   toJSON() {
@@ -30,6 +32,7 @@ export class News {
       sourceUrl: this.sourceUrl,
       publishedAt: this.publishedAt,
       createdAt: this.createdAt,
+      images: this.images,
     };
   }
 
@@ -43,6 +46,7 @@ export class News {
       [COL.SOURCE_URL]: this.sourceUrl,
       [COL.PUBLISHED_AT]: this.publishedAt,
       [COL.CREATED_AT]: this.createdAt,
+      [COL.IMAGES]: JSON.stringify(this.images),
     };
   }
 

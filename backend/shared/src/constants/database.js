@@ -8,6 +8,15 @@ export const NEWS_COLUMNS = {
   SOURCE_URL: "source_url",
   PUBLISHED_AT: "published_at",
   CREATED_AT: "created_at",
+  IMAGES: "images",
 };
 
 export const NEWS_TABLE = "news";
+
+export const DEFAULT_IMAGE_OBJECT = {
+  url: "",
+  alt: "",
+  caption: "",
+  width: null,
+  height: null,
+};

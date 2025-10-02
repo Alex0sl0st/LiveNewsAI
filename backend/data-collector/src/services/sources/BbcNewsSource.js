@@ -3,6 +3,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import BaseNewsSource from "./BaseNewsSource.js";
 import { getSourceConfig } from "../../config/external.js";
+import { normalizeUrl } from "../../utils/normalizeUrl.js";
 
 class BbcNewsSource extends BaseNewsSource {
   constructor() {
@@ -10,16 +11,16 @@ class BbcNewsSource extends BaseNewsSource {
     this.parser = new RSSParser();
   }
 
-  /**
-   * Головний метод: отримати новини
-   */
   async fetchNews() {
     try {
       const feed = await this.parser.parseURL(this.config.urls.rss);
 
-      // витягуємо повний текст для кожної новини
+      const textItems = feed.items.filter((item) =>
+        this.isTextArticle(item.link)
+      );
+
       const articles = await Promise.all(
-        feed.items.map((item) => this.enrichWithFullText(item))
+        textItems.map((item) => this.enrichWithFullText(item))
       );
 
       return articles;
@@ -29,21 +30,27 @@ class BbcNewsSource extends BaseNewsSource {
     }
   }
 
-  /**
-   * Допоміжний метод: завантажує повний текст статті з HTML
-   */
   async enrichWithFullText(item) {
     let fullContent = null;
     let images = [];
 
+    const cleanLink = normalizeUrl(item.link);
+
     try {
-      const { data: html } = await axios.get(item.link, { timeout: 5000 });
+      const { data: html } = await axios.get(cleanLink, { timeout: 5000 });
       const $ = cheerio.load(html);
 
-      // основний текст у <article>
+      $(
+        "article noscript, \
+      article .media-player, \
+      article figure, \
+      article [data-component='ad-slot'], \
+      article [data-component='tags'], \
+      article .ssrcss-1kczw0k-PromoGroup"
+      ).remove();
+
       fullContent = $("article").text().trim();
 
-      // приклад: зібрати всі зображення з <article>
       //   images = $("article img")
       //     .map((_, el) => $(el).attr("src"))
       //     .get();
@@ -57,9 +64,23 @@ class BbcNewsSource extends BaseNewsSource {
     return this.toStandardFormat({
       title: item.title,
       content: fullContent,
-      sourceUrl: item.link,
+      sourceUrl: cleanLink,
       publishedAt: item.pubDate,
     });
+  }
+
+  isTextArticle(url) {
+    if (!url) return false;
+
+    const blockedPatterns = [
+      "/news/videos/",
+      "/news/av/",
+      "/in-pictures-",
+      "/news/live/",
+      "/resources/",
+    ];
+
+    return !blockedPatterns.some((pattern) => url.includes(pattern));
   }
 }
 

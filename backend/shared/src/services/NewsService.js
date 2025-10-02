@@ -21,15 +21,18 @@ class NewsService {
     }
   }
 
-  async create({ title, content, sourceUrl = "Random" }) {
+  async create({ title, content, sourceUrl = "Random", images = [] }) {
+    const imagesJSON = JSON.stringify(images);
+
     const result = await this.query(
       `INSERT INTO ${NEWS_TABLE} 
       (${COL.TITLE}, 
       ${COL.CONTENT}, 
       ${COL.SOURCE_URL},
+      ${COL.IMAGES},
       ${COL.CREATED_AT}) 
-      VALUES ($1, $2, $3, NOW()) RETURNING *`,
-      [title, content, sourceUrl]
+      VALUES ($1, $2, $3, $4, NOW()) RETURNING *`,
+      [title, content, sourceUrl, imagesJSON]
     );
 
     if (result.success) {

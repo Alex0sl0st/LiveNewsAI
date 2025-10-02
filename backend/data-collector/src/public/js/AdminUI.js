@@ -13,7 +13,9 @@ class AdminUI {
 
     for (const key in news) {
       if (key !== "title") {
-        html += `<p><b>${key}:</b> ${news[key]}</p>`;
+        let value = news[key];
+        value = typeof value === "object" ? JSON.stringify(value) : value;
+        html += `<p><b>${key}:</b> ${value}</p>`;
       }
     }
 
