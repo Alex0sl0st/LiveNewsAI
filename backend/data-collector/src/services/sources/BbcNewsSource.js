@@ -4,6 +4,59 @@ import * as cheerio from "cheerio";
 import BaseNewsSource from "./BaseNewsSource.js";
 import { getSourceConfig } from "../../config/external.js";
 import { normalizeUrl } from "../../utils/normalizeUrl.js";
+import { createDefaultImage } from "../../shared.js";
+
+const BBC_IMAGE_DOMAINS = ["ichef.bbci.co.uk"];
+const BLOCKED_PATTERNS = [
+  "/news/videos/",
+  "/news/av/",
+  "/in-pictures-",
+  "/news/live/",
+  "/resources/",
+];
+
+function getImageSrc($el) {
+  function getBestSrcFromSrcset(srcset) {
+    return (
+      srcset
+        ?.split(",")
+        .map((s) => s.trim().split(" ")[0])
+        .pop() || null
+    );
+  }
+
+  return (
+    $el.attr("src") ||
+    $el.attr("data-src") ||
+    getBestSrcFromSrcset($el.attr("srcset")) ||
+    ""
+  );
+}
+
+function isValidImageSrc(src) {
+  return BBC_IMAGE_DOMAINS.some((domain) => src.includes(domain));
+}
+
+function isBlockedImage(alt, url) {
+  const lowerAlt = alt?.toLowerCase() || "";
+  return (
+    lowerAlt === "presentational" ||
+    url.includes("placeholder") ||
+    url.includes("bbc-blocks")
+  );
+}
+
+function cleanArticleContent($) {
+  $(
+    "article noscript, \
+    article .media-player, \
+    article figure, \
+    article [data-component='ad-slot'], \
+    article [data-component='tags'], \
+    article .ssrcss-1kczw0k-PromoGroup"
+  ).remove();
+  return $("article").text().trim();
+}
 
 class BbcNewsSource extends BaseNewsSource {
   constructor() {
@@ -34,53 +87,76 @@ class BbcNewsSource extends BaseNewsSource {
     let fullContent = null;
     let images = [];
 
-    const cleanLink = normalizeUrl(item.link);
-
     try {
+      const cleanLink = normalizeUrl(item.link);
+
       const { data: html } = await axios.get(cleanLink, { timeout: 5000 });
       const $ = cheerio.load(html);
 
-      $(
-        "article noscript, \
-      article .media-player, \
-      article figure, \
-      article [data-component='ad-slot'], \
-      article [data-component='tags'], \
-      article .ssrcss-1kczw0k-PromoGroup"
-      ).remove();
+      // console.log($("article").html());
 
-      fullContent = $("article").text().trim();
+      images = this.extractArticleMedia($);
+      fullContent = cleanArticleContent($);
 
-      //   images = $("article img")
-      //     .map((_, el) => $(el).attr("src"))
-      //     .get();
+      return this.toStandardFormat({
+        title: item.title,
+        content: fullContent,
+        sourceUrl: cleanLink,
+        publishedAt: item.pubDate,
+        images: images,
+      });
     } catch (err) {
       console.error(`[BBC] Error fetching full article:`, err.message);
     }
 
     // summary: item.contentSnippet,
     //   images,
-
-    return this.toStandardFormat({
-      title: item.title,
-      content: fullContent,
-      sourceUrl: cleanLink,
-      publishedAt: item.pubDate,
-    });
   }
 
   isTextArticle(url) {
     if (!url) return false;
+    return !BLOCKED_PATTERNS.some((pattern) => url.includes(pattern));
+  }
 
-    const blockedPatterns = [
-      "/news/videos/",
-      "/news/av/",
-      "/in-pictures-",
-      "/news/live/",
-      "/resources/",
-    ];
+  extractArticleMedia($) {
+    const mediaImages = [];
 
-    return !blockedPatterns.some((pattern) => url.includes(pattern));
+    $("article figure").each((_, fig) => {
+      const img = $(fig)
+        .find("img")
+        .filter((_, el) => {
+          const src = getImageSrc($(el));
+          return isValidImageSrc(src);
+        })
+        .first();
+
+      if (!img.length) return;
+
+      const url = getImageSrc(img);
+
+      if (!url) return;
+
+      const alt = img.attr("alt") || "";
+
+      if (isBlockedImage(alt, url)) {
+        return;
+      }
+
+      const caption =
+        $(fig).find("figcaption").text().trim() || alt.trim() || "";
+
+      mediaImages.push(createDefaultImage({ url, caption }));
+    });
+
+    // // Відео-прев’ю
+    // $("article .media-player img, article video[poster]").each((_, el) => {
+    //   const url = $(el).attr("src") || $(el).attr("poster");
+    //   if (!url || !url.includes("ichef.bbci.co.uk")) return;
+
+    //   mediaImages.push(createDefaultImage({ url, caption, type: "video-poster" }));
+    // });
+
+    return mediaImages;
   }
 }
 

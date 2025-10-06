@@ -15,8 +15,10 @@ export const NEWS_TABLE = "news";
 
 export const DEFAULT_IMAGE_OBJECT = {
   url: "",
-  alt: "",
+  type: "image",
   caption: "",
-  width: null,
-  height: null,
 };
+
+export function createDefaultImage({ url, caption = "", type = "image" }) {
+  return { url, caption, type };
+}

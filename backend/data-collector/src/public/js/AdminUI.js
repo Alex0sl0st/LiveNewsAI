@@ -8,14 +8,27 @@ class AdminUI {
     container.innerHTML = `<h2>Last Message:<br>${message}</h2>`;
   }
 
-  getNewsInnerHTML(news) {
-    let html = `<h3><strong>Title:</strong> ${news.title}</h3>`;
+  getNewsInnerHTML(news, newsNumber = 1) {
+    let html = "";
+
+    html += `<h3>${newsNumber}</h3>`;
+    console.log(news.images);
+
+    news.images.forEach((image) => {
+      html += `<h4 class="imageCaption">${image.caption}</h4>`;
+      html += `<img class="newsImage" src="${image.url}" alt="${image.caption}">`;
+    });
+
+    html += `<h3><strong>Title:</strong> ${news.title}</h3>`;
 
     for (const key in news) {
       if (key !== "title") {
         let value = news[key];
-        value = typeof value === "object" ? JSON.stringify(value) : value;
-        html += `<p><b>${key}:</b> ${value}</p>`;
+        value =
+          typeof value === "object"
+            ? `<span class="imagesData">${JSON.stringify(value)}</span>`
+            : value;
+        html += `<p ><b>${key}:</b> ${value}</p>`;
       }
     }
 
@@ -24,10 +37,10 @@ class AdminUI {
 
   renderNews(newsList, container = this.gotDataContainer) {
     container.innerHTML = "";
-    newsList.forEach((news) => {
+    newsList.forEach((news, index) => {
       const block = document.createElement("div");
       block.classList.add("singleNewsBlock");
-      block.innerHTML = this.getNewsInnerHTML(news);
+      block.innerHTML = this.getNewsInnerHTML(news, newsList.length - index);
       container.appendChild(block);
     });
   }
