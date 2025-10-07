@@ -19,10 +19,12 @@ class BaseNewsSource {
     publishedAt,
     summary,
     images,
+    sourceName = this.sourceName,
   }) {
     return {
       title: title?.trim() || "Untitled",
       content: content?.trim(),
+      sourceName,
       sourceUrl,
       publishedAt: publishedAt ? new Date(publishedAt) : null,
       summary: summary?.trim() || null,

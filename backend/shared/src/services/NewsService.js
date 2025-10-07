@@ -21,7 +21,14 @@ class NewsService {
     }
   }
 
-  async create({ title, content, sourceUrl = "Random", images = [] }) {
+  async create({
+    title,
+    content,
+    sourceName = "Unknown",
+    sourceUrl = "Random",
+    publishedAt = null,
+    images = [],
+  }) {
     const imagesJSON = JSON.stringify(images);
 
     const result = await this.query(
@@ -29,10 +36,12 @@ class NewsService {
       (${COL.TITLE}, 
       ${COL.CONTENT}, 
       ${COL.SOURCE_URL},
+      ${COL.PUBLISHED_AT},
+      ${COL.SOURCE_NAME},
       ${COL.IMAGES},
       ${COL.CREATED_AT}) 
-      VALUES ($1, $2, $3, $4, NOW()) RETURNING *`,
-      [title, content, sourceUrl, imagesJSON]
+      VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *`,
+      [title, content, sourceUrl, publishedAt, sourceName, imagesJSON]
     );
 
     if (result.success) {

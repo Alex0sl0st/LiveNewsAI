@@ -28,8 +28,17 @@ class NewsManagerService {
     const newsPromises = news.map((singleNews) => {
       try {
         if (!singleNews) return;
-        const { title, content, sourceUrl, images } = singleNews;
-        return this.newsService.create({ title, content, sourceUrl, images });
+        const { title, content, sourceUrl, images, publishedAt, sourceName } =
+          singleNews;
+
+        return this.newsService.create({
+          title,
+          content,
+          sourceUrl,
+          images,
+          publishedAt,
+          sourceName,
+        });
       } catch (err) {
         console.log("Error in createBbcNews", err);
       }
