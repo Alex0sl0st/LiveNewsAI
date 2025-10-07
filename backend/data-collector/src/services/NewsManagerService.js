@@ -25,11 +25,17 @@ class NewsManagerService {
   async createBbcNews() {
     const news = await bbcNewsSource.fetchNews();
 
-    const newsPromises = news.map(({ title, content, sourceUrl, images }) =>
-      this.newsService.create({ title, content, sourceUrl, images })
-    );
+    const newsPromises = news.map((singleNews) => {
+      try {
+        if (!singleNews) return;
+        const { title, content, sourceUrl, images } = singleNews;
+        return this.newsService.create({ title, content, sourceUrl, images });
+      } catch (err) {
+        console.log("Error in createBbcNews", err);
+      }
+    });
 
-    await Promise.all(newsPromises);
+    await Promise.allSettled(newsPromises);
   }
 }
 

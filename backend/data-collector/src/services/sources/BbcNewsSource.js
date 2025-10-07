@@ -13,6 +13,8 @@ const BLOCKED_PATTERNS = [
   "/in-pictures-",
   "/news/live/",
   "/resources/",
+  "/iplayer/",
+  "/sounds/",
 ];
 
 function getImageSrc($el) {
@@ -73,7 +75,7 @@ class BbcNewsSource extends BaseNewsSource {
       );
 
       const articles = await Promise.all(
-        textItems.map((item) => this.enrichWithFullText(item))
+        textItems.map((item) => this.enrichWithFullContent(item))
       );
 
       return articles;
@@ -83,11 +85,9 @@ class BbcNewsSource extends BaseNewsSource {
     }
   }
 
-  async enrichWithFullText(item) {
-    let fullContent = null;
-    let images = [];
-
+  async enrichWithFullContent(item) {
     try {
+      let images = [];
       const cleanLink = normalizeUrl(item.link);
 
       const { data: html } = await axios.get(cleanLink, { timeout: 5000 });
@@ -96,17 +96,22 @@ class BbcNewsSource extends BaseNewsSource {
       // console.log($("article").html());
 
       images = this.extractArticleMedia($);
-      fullContent = cleanArticleContent($);
+      const content = cleanArticleContent($);
+
+      if (!content || content.length < 100) {
+        return null; // skip non-text
+      }
 
       return this.toStandardFormat({
         title: item.title,
-        content: fullContent,
+        content: content,
         sourceUrl: cleanLink,
         publishedAt: item.pubDate,
         images: images,
       });
     } catch (err) {
       console.error(`[BBC] Error fetching full article:`, err.message);
+      return null;
     }
 
     // summary: item.contentSnippet,
