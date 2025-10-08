@@ -1,5 +1,6 @@
 import { newsService } from "../../shared.js";
 import { newsManagerService } from "../../services/NewsManagerService.js";
+import { newsSourcesConfig } from "../../config/external.js";
 
 function sendResponse(
   res,
@@ -32,7 +33,13 @@ export function deleteDuplicates(res) {
 }
 
 export function sourceBBC(res) {
-  newsManagerService.createBbcNews().then(() => {
+  newsManagerService.createNews(newsSourcesConfig.bbc.name).then(() => {
+    sendResponse(res, { massage: "sourceBBC", resType: "result" });
+  });
+}
+
+export function sourceReuters(res) {
+  newsManagerService.createNews(newsSourcesConfig.reuters.name).then(() => {
     sendResponse(res, { massage: "sourceBBC", resType: "result" });
   });
 }

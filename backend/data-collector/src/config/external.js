@@ -6,6 +6,13 @@ export const newsSourcesConfig = {
     urls: { rss: "https://feeds.bbci.co.uk/news/rss.xml" },
   },
 
+  reuters: {
+    name: "Reuters",
+    urls: {
+      homepage: "https://www.reuters.com/world/",
+    },
+  },
+
   newsApi: {
     name: "NewsAPI.org",
     baseUrl: "https://newsapi.org/v2",

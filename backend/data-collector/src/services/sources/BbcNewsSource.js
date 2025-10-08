@@ -153,15 +153,7 @@ class BbcNewsSource extends BaseNewsSource {
       mediaImages.push(createDefaultImage({ url, caption }));
     });
 
-    // // Відео-прев’ю
-    // $("article .media-player img, article video[poster]").each((_, el) => {
-    //   const url = $(el).attr("src") || $(el).attr("poster");
-    //   if (!url || !url.includes("ichef.bbci.co.uk")) return;
-
-    //   mediaImages.push(createDefaultImage({ url, caption, type: "video-poster" }));
-    // });
-
-    return mediaImages;
+    return mediaImages.slice(0, 20);
   }
 }
 

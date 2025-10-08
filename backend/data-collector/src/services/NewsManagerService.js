@@ -1,50 +1,68 @@
 import { externalNewsService } from "./externalNewsService.js";
 import { newsService } from "../shared.js";
+import { newsSourcesConfig } from "../config/external.js";
 import { bbcNewsSource } from "./sources/BbcNewsSource.js";
+import { reutersNewsSource } from "./sources/ReutersNewsSource.js";
 
 class NewsManagerService {
   constructor() {
     this.externalNewsService = externalNewsService;
     this.newsService = newsService;
+
+    this.sourcesNames = {};
+
+    Object.values(newsSourcesConfig).forEach((source) => {
+      if (source.name) {
+        const sourceName = source.name.toLowerCase();
+        this.sourcesNames[sourceName] = sourceName;
+      }
+    });
+
+    this.sources = {
+      bbc: bbcNewsSource,
+      reuters: reutersNewsSource,
+    };
   }
 
-  async createNews(news) {
-    const newsPromises = news.articles.map(({ title, content }) =>
-      this.newsService.create({ title, content })
-    );
+  async saveNewsToDB(news) {
+    const newsPromises = news
+      .filter((item) => item)
+      .map((singleNews) => {
+        try {
+          console.log(singleNews);
+          return this.newsService.create(singleNews);
+        } catch (err) {
+          console.log("Error in saveNewsToDB", err);
+        }
+      });
 
-    await Promise.all(newsPromises);
+    await Promise.allSettled(newsPromises);
   }
 
   async createNewsFromNewsAPI(topic = "latest") {
     const news = await this.externalNewsService.fetchNewsFromNewsAPI(topic);
 
-    await this.createNews(news);
+    await this.saveNewsToDB(news);
   }
 
-  async createBbcNews() {
-    const news = await bbcNewsSource.fetchNews();
+  async createNews(source) {
+    let news;
 
-    const newsPromises = news.map((singleNews) => {
-      try {
-        if (!singleNews) return;
-        const { title, content, sourceUrl, images, publishedAt, sourceName } =
-          singleNews;
+    source = source || this.sourcesNames.bbc;
 
-        return this.newsService.create({
-          title,
-          content,
-          sourceUrl,
-          images,
-          publishedAt,
-          sourceName,
-        });
-      } catch (err) {
-        console.log("Error in createBbcNews", err);
-      }
-    });
+    switch (source.toLowerCase()) {
+      case this.sourcesNames.bbc:
+        news = await this.sources.bbc.fetchNews();
+        break;
+      case this.sourcesNames.reuters:
+        news = await this.sources.reuters.fetchNews();
+        break;
+      default:
+        console.log(`Error: Unknown news source: ${source}`);
+        return;
+    }
 
-    await Promise.allSettled(newsPromises);
+    await this.saveNewsToDB(news);
   }
 }
 

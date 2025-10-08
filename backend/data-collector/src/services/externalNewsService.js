@@ -26,9 +26,10 @@ class ExternalNewsService {
         timeout: 5000,
       });
       // console.log(news, 123);
-      return news;
+      return news.articles;
     } catch (err) {
       console.log("Error fetching news :", err.message);
+      return [];
     }
   }
 }
