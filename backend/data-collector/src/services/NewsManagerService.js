@@ -29,7 +29,6 @@ class NewsManagerService {
       .filter((item) => item)
       .map((singleNews) => {
         try {
-          console.log(singleNews);
           return this.newsService.create(singleNews);
         } catch (err) {
           console.log("Error in saveNewsToDB", err);

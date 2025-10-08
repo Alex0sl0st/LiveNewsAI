@@ -10,11 +10,21 @@
     <h1>Admin Panel</h1>
     <div id="lastMessageContainer" class="lastMessageContainer"></div>
     <div id="actionPanel" class="actionPanel">
-      <button id="getAll">Get all</button>
-      <button id="createNewsAPI">Create NewsAPI</button>
-      <button id="sourceBBC">Source BBC</button>
-      <button id="deleteDuplicates">Delete Duplicates</button>
-      <button id="deleteAllResetIds">Delete All ResetIds</button>
+      <div class="buttonsPanel">
+        <button id="getAll">Get all</button>
+        <button id="deleteDuplicates">Delete Duplicates</button>
+        <button id="deleteAllResetIds">Delete All ResetIds</button>
+      </div>
+
+      <div id="sourceButtonsContainer" class="buttonsPanel sourcesBlock">
+        <button id="bbc">Source BBC</button>
+        <button id="reuters">Source Reuters</button>
+        <button id="associatedPress">Source Associated Press</button>
+        <button id="cnn">Source CNN</button>
+        <button id="deutscheWelle">Source Deutsche Welle</button>
+        <button id="x">Source X</button>
+        <button id="createNewsAPI">Create NewsAPI</button>
+      </div>
     </div>
     <div id="gotDataContainer" class="gotDataContainer"></div>
     <script type="module" src="/admin.js"></script>

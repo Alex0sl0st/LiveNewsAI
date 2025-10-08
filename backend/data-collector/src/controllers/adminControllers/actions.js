@@ -1,19 +1,27 @@
 import * as handlers from "./handlers.js";
+import { normalizeKeys } from "../../utils/normalizeKeys.js";
 
 export function doNewsAction(req, res) {
-  const { type } = req.body.action;
+  const { type, payload } = req.body.action;
 
-  if (type === "getAll") {
-    handlers.getAll(res);
-  } else if (type === "createNewsAPI") {
-    handlers.createNewsAPI(res);
-  } else if (type === "deleteDuplicates") {
-    handlers.deleteDuplicates(res);
-  } else if (type === "sourceBBC") {
-    handlers.sourceBBC(res);
-  } else if (type === "deleteAllResetIds") {
-    handlers.deleteAllResetIds(res);
+  const sourceHandlers = normalizeKeys({
+    bbc: () => handlers.sourceBBC(res),
+    reuters: () => handlers.sourceReuters(res),
+    createNewsAPI: () => handlers.createNewsAPI(res),
+  });
+
+  if (payload.actionGenus === "source") {
+    const handler = sourceHandlers[type.toLowerCase()];
+    handler ? handler() : handlers.unknown(res);
   } else {
-    handlers.unknown(res);
+    if (type === "getAll") {
+      handlers.getAll(res);
+    } else if (type === "deleteDuplicates") {
+      handlers.deleteDuplicates(res);
+    } else if (type === "deleteAllResetIds") {
+      handlers.deleteAllResetIds(res);
+    } else {
+      handlers.unknown(res);
+    }
   }
 }

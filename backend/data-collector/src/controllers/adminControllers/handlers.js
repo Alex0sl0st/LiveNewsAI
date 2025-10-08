@@ -40,7 +40,7 @@ export function sourceBBC(res) {
 
 export function sourceReuters(res) {
   newsManagerService.createNews(newsSourcesConfig.reuters.name).then(() => {
-    sendResponse(res, { massage: "sourceBBC", resType: "result" });
+    sendResponse(res, { massage: "sourceReuters", resType: "result" });
   });
 }
 

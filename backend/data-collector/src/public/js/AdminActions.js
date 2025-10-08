@@ -1,8 +1,6 @@
 class AdminActions {
   constructor() {
     this.getAll = document.querySelector("#getAll");
-    this.createNewsAPI = document.querySelector("#createNewsAPI");
-    this.sourceBBC = document.querySelector("#sourceBBC");
 
     this.deleteDuplicates = document.querySelector("#deleteDuplicates");
     this.deleteAllResetIds = document.querySelector("#deleteAllResetIds");
@@ -11,17 +9,24 @@ class AdminActions {
       type,
       payload,
     });
+
+    this.sourceButtons = {};
+    document
+      .querySelectorAll("#sourceButtonsContainer button[id]")
+      .forEach((btn) => {
+        this.sourceButtons[btn.id] = btn;
+      });
   }
 
   init(handleAction) {
+    Object.keys(this.sourceButtons).forEach((btnId) => {
+      this.sourceButtons[btnId].addEventListener("click", () =>
+        handleAction(this.getAction(btnId, { actionGenus: "source" }))
+      );
+    });
+
     this.getAll.addEventListener("click", () =>
       handleAction(this.getAction("getAll"))
-    );
-    this.createNewsAPI.addEventListener("click", () =>
-      handleAction(this.getAction("createNewsAPI"))
-    );
-    this.sourceBBC.addEventListener("click", () =>
-      handleAction(this.getAction("sourceBBC"))
     );
 
     this.deleteDuplicates.addEventListener("click", () =>
