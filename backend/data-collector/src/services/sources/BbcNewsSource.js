@@ -75,7 +75,7 @@ class BbcNewsSource extends BaseNewsSource {
       );
 
       const articles = await Promise.all(
-        textItems.map((item) => this.enrichWithFullContent(item))
+        textItems.map((item) => this.fetchFullArticle(item))
       );
 
       return articles;
@@ -85,7 +85,7 @@ class BbcNewsSource extends BaseNewsSource {
     }
   }
 
-  async enrichWithFullContent(item) {
+  async fetchFullArticle(item) {
     try {
       let images = [];
       const cleanLink = normalizeUrl(item.link);
