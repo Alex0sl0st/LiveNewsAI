@@ -90,7 +90,7 @@ class BbcNewsSource extends BaseNewsSource {
       let images = [];
       const cleanLink = normalizeUrl(item.link);
 
-      const { data: html } = await axios.get(cleanLink, { timeout: 5000 });
+      const { data: html } = await this.baseHttpClient.get(cleanLink);
       const $ = cheerio.load(html);
 
       // console.log($("article").html());
@@ -98,7 +98,7 @@ class BbcNewsSource extends BaseNewsSource {
       images = this.extractArticleMedia($);
       const content = cleanArticleContent($);
 
-      if (!content || content.length < 100) {
+      if (!content || content.length < this.minContentLength) {
         return null; // skip non-text
       }
 
@@ -153,7 +153,7 @@ class BbcNewsSource extends BaseNewsSource {
       mediaImages.push(createDefaultImage({ url, caption }));
     });
 
-    return mediaImages.slice(0, 20);
+    return mediaImages.slice(0, this.articleImageLimit + 1);
   }
 }
 

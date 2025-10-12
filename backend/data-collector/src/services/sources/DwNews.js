@@ -63,7 +63,7 @@ class DwNews extends BaseNewsSource {
   async fetchFullArticle(item) {
     try {
       const url = normalizeUrl(item.link);
-      const { data: html } = await axios.get(url, { timeout: 10000 });
+      const { data: html } = await this.baseHttpClient.get(url);
       const $ = cheerio.load(html);
 
       const images = this.extractArticleImages($);
@@ -71,7 +71,7 @@ class DwNews extends BaseNewsSource {
 
       const content = cleanArticleContent($);
 
-      if (!content || content.length < 80) return null;
+      if (!content || content.length < this.minContentLength) return null;
 
       return this.toStandardFormat({
         title: item.title,
@@ -117,7 +117,7 @@ class DwNews extends BaseNewsSource {
       }
     });
 
-    return images.slice(0, 10);
+    return images.slice(0, this.articleImageLimit + 1);
   }
 }
 
