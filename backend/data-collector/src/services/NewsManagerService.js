@@ -1,7 +1,7 @@
 import { externalNewsService } from "./externalNewsService.js";
 import { newsService } from "../shared.js";
 import { newsSourcesConfig } from "../config/external.js";
-import { bbcNewsSource } from "./sources/BbcNewsSource.js";
+import { bbcNews } from "./sources/BbcNews.js";
 import { dwNews } from "./sources/DwNews.js";
 
 class NewsManagerService {
@@ -19,7 +19,7 @@ class NewsManagerService {
     });
 
     this.sources = {
-      bbc: bbcNewsSource,
+      bbc: bbcNews,
       dw: dwNews,
     };
   }

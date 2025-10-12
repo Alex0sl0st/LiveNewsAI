@@ -42,7 +42,7 @@ function isValidImageSrc(src) {
 function isBlockedImage(alt, url) {
   const lowerAlt = alt?.toLowerCase() || "";
   return (
-    lowerAlt === "presentational" ||
+    lowerAlt.includes("presentational") ||
     url.includes("placeholder") ||
     url.includes("bbc-blocks")
   );
@@ -60,7 +60,7 @@ function cleanArticleContent($) {
   return $("article").text().trim();
 }
 
-class BbcNewsSource extends BaseNewsSource {
+class BbcNews extends BaseNewsSource {
   constructor() {
     super(getSourceConfig("bbc"));
     this.parser = new RSSParser();
@@ -157,5 +157,5 @@ class BbcNewsSource extends BaseNewsSource {
   }
 }
 
-const bbcNewsSource = new BbcNewsSource();
-export { bbcNewsSource };
+const bbcNews = new BbcNews();
+export { bbcNews };
