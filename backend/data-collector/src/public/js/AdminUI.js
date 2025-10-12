@@ -24,10 +24,11 @@ class AdminUI {
     for (const key in news) {
       if (key !== "title") {
         let value = news[key];
-        value =
-          typeof value === "object"
-            ? `<span class="imagesData">${JSON.stringify(value)}</span>`
-            : value;
+        if (typeof value === "string") {
+          value = value.replace(/\n\n/g, "<br><br>");
+        } else if (typeof value === "object") {
+          value = `<span class="imagesData">${JSON.stringify(value)}</span>`;
+        }
         html += `<p ><b>${key}:</b> ${value}</p>`;
       }
     }

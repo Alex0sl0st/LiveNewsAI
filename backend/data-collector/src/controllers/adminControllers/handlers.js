@@ -20,27 +20,9 @@ export function getAll(res) {
   });
 }
 
-export function createNewsAPI(res) {
-  newsManagerService.createNewsFromNewsAPI().then(() => {
-    sendResponse(res, { massage: "Create NewsAPI", resType: "result" });
-  });
-}
-
 export function deleteDuplicates(res) {
   newsService.deleteDuplicates().then(() => {
     sendResponse(res, { massage: "Delete Duplicates", resType: "result" });
-  });
-}
-
-export function sourceBBC(res) {
-  newsManagerService.createNews(newsSourcesConfig.bbc.name).then(() => {
-    sendResponse(res, { massage: "sourceBBC", resType: "result" });
-  });
-}
-
-export function sourceReuters(res) {
-  newsManagerService.createNews(newsSourcesConfig.reuters.name).then(() => {
-    sendResponse(res, { massage: "sourceReuters", resType: "result" });
   });
 }
 
@@ -56,5 +38,23 @@ export function unknown(res) {
     success: false,
     resType: "result",
     massage: "Something went wrong",
+  });
+}
+
+export function createNewsAPI(res) {
+  newsManagerService.createNewsFromNewsAPI().then(() => {
+    sendResponse(res, { massage: "Create NewsAPI", resType: "result" });
+  });
+}
+
+export function sourceBBC(res) {
+  newsManagerService.createNews(newsSourcesConfig.bbc.name).then(() => {
+    sendResponse(res, { massage: "sourceBBC", resType: "result" });
+  });
+}
+
+export function sourceDW(res) {
+  newsManagerService.createNews(newsSourcesConfig.dw.name).then(() => {
+    sendResponse(res, { massage: "sourceDW", resType: "result" });
   });
 }

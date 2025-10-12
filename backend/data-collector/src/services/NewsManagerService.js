@@ -2,7 +2,7 @@ import { externalNewsService } from "./externalNewsService.js";
 import { newsService } from "../shared.js";
 import { newsSourcesConfig } from "../config/external.js";
 import { bbcNewsSource } from "./sources/BbcNewsSource.js";
-import { reutersNewsSource } from "./sources/ReutersNewsSource.js";
+import { dwNews } from "./sources/DwNews.js";
 
 class NewsManagerService {
   constructor() {
@@ -20,7 +20,7 @@ class NewsManagerService {
 
     this.sources = {
       bbc: bbcNewsSource,
-      reuters: reutersNewsSource,
+      dw: dwNews,
     };
   }
 
@@ -53,8 +53,8 @@ class NewsManagerService {
       case this.sourcesNames.bbc:
         news = await this.sources.bbc.fetchNews();
         break;
-      case this.sourcesNames.reuters:
-        news = await this.sources.reuters.fetchNews();
+      case this.sourcesNames.dw:
+        news = await this.sources.dw.fetchNews();
         break;
       default:
         console.log(`Error: Unknown news source: ${source}`);

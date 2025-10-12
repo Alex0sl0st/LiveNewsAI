@@ -6,10 +6,10 @@ export const newsSourcesConfig = {
     urls: { rss: "https://feeds.bbci.co.uk/news/rss.xml" },
   },
 
-  reuters: {
-    name: "Reuters",
+  dw: {
+    name: "DW",
     urls: {
-      homepage: "https://www.reuters.com/world/",
+      rss: "https://rss.dw.com/rdf/rss-en-all",
     },
   },
 

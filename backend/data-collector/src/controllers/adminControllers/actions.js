@@ -6,7 +6,7 @@ export function doNewsAction(req, res) {
 
   const sourceHandlers = normalizeKeys({
     bbc: () => handlers.sourceBBC(res),
-    reuters: () => handlers.sourceReuters(res),
+    dw: () => handlers.sourceDW(res),
     createNewsAPI: () => handlers.createNewsAPI(res),
   });
 
