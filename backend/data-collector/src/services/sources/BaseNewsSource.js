@@ -1,4 +1,5 @@
 import axios from "axios";
+import pLimit from "p-limit";
 class BaseNewsSource {
   constructor(config, sourceName) {
     if (!config) {
@@ -22,6 +23,9 @@ class BaseNewsSource {
     };
 
     this.baseHttpClient = axios.create(this.baseHttpClientConfig);
+
+    const concurrency = config?.concurrencyRssPLimit || 20;
+    this.rssPLimit = pLimit(concurrency);
   }
 
   async fetchNews() {

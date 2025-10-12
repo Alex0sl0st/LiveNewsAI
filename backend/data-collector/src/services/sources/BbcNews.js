@@ -75,7 +75,9 @@ class BbcNews extends BaseNewsSource {
       );
 
       const articles = await Promise.all(
-        textItems.map((item) => this.fetchFullArticle(item))
+        textItems.map((item) =>
+          this.rssPLimit(() => this.fetchFullArticle(item))
+        )
       );
 
       return articles;

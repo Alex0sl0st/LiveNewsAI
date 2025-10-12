@@ -48,7 +48,9 @@ class DwNews extends BaseNewsSource {
     try {
       const feed = await this.parser.parseURL(this.config.urls.rss);
       const articles = await Promise.allSettled(
-        feed.items.map((item) => this.fetchFullArticle(item))
+        feed.items.map((item) =>
+          this.rssPLimit(() => this.fetchFullArticle(item))
+        )
       );
 
       return articles
