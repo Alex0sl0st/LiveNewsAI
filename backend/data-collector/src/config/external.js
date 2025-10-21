@@ -13,6 +13,13 @@ export const newsSourcesConfig = {
     },
   },
 
+  ap: {
+    name: "AP",
+    urls: {
+      sitemapIndex: "https://apnews.com/sitemap.xml",
+    },
+  },
+
   newsApi: {
     name: "NewsAPI.org",
     baseUrl: "https://newsapi.org/v2",

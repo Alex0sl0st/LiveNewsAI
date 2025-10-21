@@ -58,3 +58,9 @@ export function sourceDW(res) {
     sendResponse(res, { massage: "sourceDW", resType: "result" });
   });
 }
+
+export function sourceAP(res) {
+  newsManagerService.createNews(newsSourcesConfig.ap.name).then(() => {
+    sendResponse(res, { massage: "sourceAP", resType: "result" });
+  });
+}
