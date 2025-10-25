@@ -2,7 +2,7 @@ import BaseNewsSource from "../BaseNewsSource.js";
 import { getSourceConfig } from "../../../config/external.js";
 import * as cheerio from "cheerio";
 
-import { extractArticleUrls } from "./extractors/articleUrls.js";
+import { getArticleUrls } from "./sources/sitemap/getArticleUrls.js";
 import { extractPublishDate } from "./extractors/date.js";
 import { extractArticleText } from "./extractors/articleText.js";
 import { extractArticleImages } from "./extractors/images/index.js";
@@ -31,7 +31,7 @@ class ApNews extends BaseNewsSource {
     try {
       console.log("[AP] Starting news fetch...");
 
-      const urlsToParse = await extractArticleUrls(this.configParams);
+      const urlsToParse = await getArticleUrls(this.configParams);
 
       const articles = await Promise.allSettled(
         urlsToParse.map((url) =>

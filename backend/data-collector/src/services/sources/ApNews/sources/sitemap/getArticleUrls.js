@@ -1,6 +1,6 @@
 import { parseStringPromise } from "xml2js";
 
-export async function extractIndexSitemapUrls({
+export async function getIndexSitemapUrls({
   baseHttpClient,
   sitemapIndexUrl,
   articlesYear,
@@ -13,7 +13,7 @@ export async function extractIndexSitemapUrls({
     .filter((url) => url.includes(articlesYear));
 }
 
-export async function extractArticleUrlsFromSitemap({
+export async function getArticleUrlsFromSitemap({
   baseHttpClient,
   sitemapUrl,
 }) {
@@ -25,10 +25,10 @@ export async function extractArticleUrlsFromSitemap({
     .filter((url) => url.includes("/article/") && !url.endsWith("-photo"));
 }
 
-export async function extractArticleUrls(params) {
+export async function getArticleUrls(params) {
   const { articlesPerMonth } = params;
 
-  const sitemaps = await extractIndexSitemapUrls(params);
+  const sitemaps = await getIndexSitemapUrls(params);
 
   let allArticleUrls = [];
   for (let i = 0; i < sitemaps.length; i++) {
@@ -37,7 +37,7 @@ export async function extractArticleUrls(params) {
 
     console.log(`[AP] Processing ${monthName} (${i + 1}/${sitemaps.length})`);
 
-    const articleUrls = await extractArticleUrlsFromSitemap({
+    const articleUrls = await getArticleUrlsFromSitemap({
       ...params,
       sitemapUrl,
     });
