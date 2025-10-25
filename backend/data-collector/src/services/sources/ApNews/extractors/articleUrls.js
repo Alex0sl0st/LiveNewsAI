@@ -21,7 +21,7 @@ export async function extractArticleUrlsFromSitemap({
 
   return monthData.urlset.url
     .map((u) => u.loc[0])
-    .filter((url) => url.includes("/article/"));
+    .filter((url) => url.includes("/article/") && !url.endsWith("-photo"));
 }
 
 export async function extractArticleUrls(params) {
