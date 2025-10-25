@@ -15,6 +15,7 @@ class ApNews extends BaseNewsSource {
 
     this.articlesPerMonth = 10;
     this.delayBetweenArticles = 500;
+    this.articlesYear = "2024";
 
     this.configParams = {
       baseHttpClient: this.baseHttpClient,
@@ -22,6 +23,7 @@ class ApNews extends BaseNewsSource {
       articlesPerMonth: this.articlesPerMonth,
       delayBetweenArticles: this.delayBetweenArticles,
       articleImageLimit: this.articleImageLimit,
+      articlesYear: this.articlesYear,
     };
   }
 

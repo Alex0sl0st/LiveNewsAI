@@ -3,13 +3,14 @@ import { parseStringPromise } from "xml2js";
 export async function extractIndexSitemapUrls({
   baseHttpClient,
   sitemapIndexUrl,
+  articlesYear,
 }) {
   const { data: indexXml } = await baseHttpClient.get(sitemapIndexUrl);
   const indexData = await parseStringPromise(indexXml);
 
   return indexData.sitemapindex.sitemap
     .map((s) => s.loc[0])
-    .filter((url) => url.includes("2024"));
+    .filter((url) => url.includes(articlesYear));
 }
 
 export async function extractArticleUrlsFromSitemap({
