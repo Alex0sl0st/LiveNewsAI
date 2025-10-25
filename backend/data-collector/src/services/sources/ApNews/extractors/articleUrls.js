@@ -1,0 +1,50 @@
+import { parseStringPromise } from "xml2js";
+
+export async function extractIndexSitemapUrls({
+  baseHttpClient,
+  sitemapIndexUrl,
+}) {
+  const { data: indexXml } = await baseHttpClient.get(sitemapIndexUrl);
+  const indexData = await parseStringPromise(indexXml);
+
+  return indexData.sitemapindex.sitemap
+    .map((s) => s.loc[0])
+    .filter((url) => url.includes("2024"));
+}
+
+export async function extractArticleUrlsFromSitemap({
+  baseHttpClient,
+  sitemapUrl,
+}) {
+  const { data: monthXml } = await baseHttpClient.get(sitemapUrl);
+  const monthData = await parseStringPromise(monthXml);
+
+  return monthData.urlset.url
+    .map((u) => u.loc[0])
+    .filter((url) => url.includes("/article/"));
+}
+
+export async function extractArticleUrls(params) {
+  const { articlesPerMonth } = params;
+
+  const sitemaps = await extractIndexSitemapUrls(params);
+
+  let allArticleUrls = [];
+  for (let i = 0; i < sitemaps.length; i++) {
+    const sitemapUrl = sitemaps[i];
+    const monthName = sitemapUrl.split("/").pop().replace(".xml", "");
+
+    console.log(`[AP] Processing ${monthName} (${i + 1}/${sitemaps.length})`);
+
+    const articleUrls = await extractArticleUrlsFromSitemap({
+      ...params,
+      sitemapUrl,
+    });
+
+    const monthUrls = articleUrls.slice(0, articlesPerMonth);
+
+    allArticleUrls = [...allArticleUrls, ...monthUrls];
+  }
+
+  return allArticleUrls;
+}
