@@ -56,11 +56,7 @@ class ApNews extends BaseNewsSource {
       const { data: html } = await this.baseHttpClient.get(url);
       const $ = cheerio.load(html);
 
-      const title =
-        $("h1").first().text().trim() ||
-        $("h2").first().text().trim() ||
-        this.defaultTitle;
-
+      const title = this.getTitleFromArticle($);
       const images = extractArticleImages({ $, ...this.configParams }) || [];
       const publishedAt = extractPublishDate($);
       const content = extractArticleText($);
