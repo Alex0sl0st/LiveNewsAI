@@ -1,7 +1,7 @@
 import { externalNewsService } from "./externalNewsService.js";
 import { newsService } from "../shared.js";
 import { newsSourcesConfig } from "../config/external.js";
-import { bbcNews } from "./sources/BbcNews.js";
+import { bbcNews } from "./sources/BbcNews/BbcNews.js";
 import { dwNews } from "./sources/DwNews.js";
 import { apNews } from "./sources/ApNews/ApNews.js";
 

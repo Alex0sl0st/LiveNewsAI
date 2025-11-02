@@ -59,7 +59,7 @@ class ApNews extends BaseNewsSource {
       const title =
         $("h1").first().text().trim() ||
         $("h2").first().text().trim() ||
-        "No title";
+        this.defaultTitle;
 
       const images = extractArticleImages({ $, ...this.configParams }) || [];
       const publishedAt = extractPublishDate($);

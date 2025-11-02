@@ -9,6 +9,8 @@ class BaseNewsSource {
     this.config = config;
     this.sourceName = sourceName || config.name;
 
+    this.defaultTitle = "No title";
+
     this.articleImageLimit = 20;
     this.minContentLength = 80;
 
@@ -30,6 +32,13 @@ class BaseNewsSource {
 
   async fetchNews() {
     throw new Error("fetchNews() must be implemented in subclass");
+  }
+
+  getTitleFromArticle($) {
+    const title =
+      $("h1").first().text().trim() || $("h2").first().text().trim();
+
+    return title || this.defaultTitle;
   }
 
   toStandardFormat({
