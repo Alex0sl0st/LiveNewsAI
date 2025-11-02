@@ -1,4 +1,3 @@
-import { externalNewsService } from "./externalNewsService.js";
 import { newsService } from "../shared.js";
 import { newsSourcesConfig } from "../config/external.js";
 import { bbcNews } from "./sources/BbcNews/BbcNews.js";
@@ -7,7 +6,6 @@ import { apNews } from "./sources/ApNews/ApNews.js";
 
 class NewsManagerService {
   constructor() {
-    this.externalNewsService = externalNewsService;
     this.newsService = newsService;
 
     this.sourcesNames = {};
@@ -38,12 +36,6 @@ class NewsManagerService {
       });
 
     await Promise.allSettled(newsPromises);
-  }
-
-  async createNewsFromNewsAPI(topic = "latest") {
-    const news = await this.externalNewsService.fetchNewsFromNewsAPI(topic);
-
-    await this.saveNewsToDB(news);
   }
 
   async createNews(source) {

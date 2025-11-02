@@ -41,12 +41,6 @@ export function unknown(res) {
   });
 }
 
-export function createNewsAPI(res) {
-  newsManagerService.createNewsFromNewsAPI().then(() => {
-    sendResponse(res, { massage: "Create NewsAPI", resType: "result" });
-  });
-}
-
 export function sourceBBC(res) {
   newsManagerService.createNews(newsSourcesConfig.bbc.name).then(() => {
     sendResponse(res, { massage: "sourceBBC", resType: "result" });

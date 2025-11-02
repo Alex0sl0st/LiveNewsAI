@@ -8,7 +8,6 @@ export function doNewsAction(req, res) {
     bbc: () => handlers.sourceBBC(res),
     dw: () => handlers.sourceDW(res),
     ap: () => handlers.sourceAP(res),
-    createNewsAPI: () => handlers.createNewsAPI(res),
   });
 
   if (payload.actionGenus === "source") {
