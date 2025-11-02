@@ -75,18 +75,6 @@ class ApNews extends BaseNewsSource {
       return null;
     }
   }
-
-  toStandardFormat(article) {
-    return {
-      title: article.title,
-      content: article.content,
-      sourceUrl: article.sourceUrl,
-      publishedAt: article.publishedAt
-        ? new Date(article.publishedAt).toISOString()
-        : null,
-      images: article.images || [],
-    };
-  }
 }
 
 const apNews = new ApNews();
