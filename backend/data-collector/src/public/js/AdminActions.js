@@ -1,3 +1,20 @@
+function getAllButtonsInContainer(containerId) {
+  const buttons = {};
+  document.querySelectorAll(`#${containerId} button[id]`).forEach((btn) => {
+    buttons[btn.id] = btn;
+  });
+
+  return buttons;
+}
+
+function initActionButtons(buttons, actionGenus, getAction, handleAction) {
+  Object.keys(buttons).forEach((btnId) => {
+    buttons[btnId].addEventListener("click", () =>
+      handleAction(getAction(btnId, { actionGenus }))
+    );
+  });
+}
+
 class AdminActions {
   constructor() {
     this.getAll = document.querySelector("#getAll");
@@ -10,20 +27,23 @@ class AdminActions {
       payload,
     });
 
-    this.sourceButtons = {};
-    document
-      .querySelectorAll("#sourceButtonsContainer button[id]")
-      .forEach((btn) => {
-        this.sourceButtons[btn.id] = btn;
-      });
+    this.sourceButtons = getAllButtonsInContainer("sourceButtonsContainer");
+    this.additionalToolsButtons = getAllButtonsInContainer("additionalTools");
   }
 
   init(handleAction) {
-    Object.keys(this.sourceButtons).forEach((btnId) => {
-      this.sourceButtons[btnId].addEventListener("click", () =>
-        handleAction(this.getAction(btnId, { actionGenus: "source" }))
-      );
-    });
+    initActionButtons(
+      this.sourceButtons,
+      "source",
+      this.getAction,
+      handleAction
+    );
+    initActionButtons(
+      this.additionalToolsButtons,
+      "extraTools",
+      this.getAction,
+      handleAction
+    );
 
     this.getAll.addEventListener("click", () =>
       handleAction(this.getAction("getAll"))

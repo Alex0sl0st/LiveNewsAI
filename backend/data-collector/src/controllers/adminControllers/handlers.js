@@ -1,6 +1,10 @@
 import { newsService } from "../../shared.js";
 import { newsManagerService } from "../../services/NewsManagerService.js";
 import { newsSourcesConfig } from "../../config/external.js";
+import {
+  chatGptService,
+  ChatGptService,
+} from "../../../../shared/src/services/chatGptService.js";
 
 function sendResponse(
   res,
@@ -56,5 +60,14 @@ export function sourceDW(res) {
 export function sourceAP(res) {
   newsManagerService.createNews(newsSourcesConfig.ap.name).then(() => {
     sendResponse(res, { massage: "sourceAP", resType: "result" });
+  });
+}
+
+export function summarizeNano(res) {
+  newsService.getAll().then(async (news) => {
+    console.log("Start generating");
+    const summarizes = await chatGptService.summarizeNews(news[6].content);
+    // console.log(JSON.stringify(summarizes, null, 2));
+    sendResponse(res, { massage: "summarizeNano", resType: "result" });
   });
 }

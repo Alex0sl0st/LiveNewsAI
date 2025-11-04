@@ -12,7 +12,6 @@ class AdminUI {
     let html = "";
 
     html += `<h3>${newsNumber}</h3>`;
-    console.log(news.images);
 
     news.images.forEach((image) => {
       html += `<h4 class="imageCaption">${image.caption}</h4>`;

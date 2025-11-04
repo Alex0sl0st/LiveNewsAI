@@ -9,6 +9,39 @@ class ChatGptService {
     });
   }
 
+  async summarizeNews(newsText) {
+    try {
+      console.log(newsText);
+      const response = await this.openai.responses.create({
+        model: "gpt-5-nano",
+        input: [
+          {
+            role: "system",
+            content:
+              "You are an expert summarization system. " +
+              "Your goal is to produce the most information-dense and concise summary possible. " +
+              "Keep all key facts, names, numbers, and relationships. " +
+              "Be as short as possible, but as long as needed to preserve all crucial details. " +
+              "Use neutral, factual language without introductions or commentary.",
+          },
+          {
+            role: "user",
+            content: `Summarize the following text:\n\n${newsText}`,
+          },
+        ],
+      });
+
+      console.log(response);
+
+      console.log(111111, response.output_text);
+
+      return response.output_text.trim();
+    } catch (error) {
+      console.error("❌ OpenAI summarize error:", error);
+      return null;
+    }
+  }
+
   async fetchChatGptAPI(newsText) {
     // console.log(newsText, 123);
     try {
