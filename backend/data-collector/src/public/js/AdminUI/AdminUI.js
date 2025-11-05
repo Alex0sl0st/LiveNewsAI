@@ -1,3 +1,5 @@
+import { createExpandTextBlock, attachExpandHandlers } from "./helpers.js";
+
 class AdminUI {
   constructor() {
     this.gotDataContainer = document.querySelector("#gotDataContainer");
@@ -20,8 +22,16 @@ class AdminUI {
 
     html += `<h3><strong>Title:</strong> ${news.title}</h3>`;
 
-    for (const key in news) {
-      if (key !== "title") {
+    const { title, ...newsInfo } = news;
+    for (const key in newsInfo) {
+      if (key === "content") {
+        let value = news[key];
+        value = value.replace(/\n\n/g, "<br><br>");
+
+        html += `<p><b>${key}:</b>
+        ${createExpandTextBlock(value)}
+      </p>`;
+      } else {
         let value = news[key];
         if (typeof value === "string") {
           value = value.replace(/\n\n/g, "<br><br>");
@@ -42,6 +52,8 @@ class AdminUI {
       block.classList.add("singleNewsBlock");
       block.innerHTML = this.getNewsInnerHTML(news, newsList.length - index);
       container.appendChild(block);
+
+      attachExpandHandlers(block);
     });
   }
 }

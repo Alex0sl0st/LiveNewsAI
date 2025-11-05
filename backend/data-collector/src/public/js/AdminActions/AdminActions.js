@@ -1,19 +1,4 @@
-function getAllButtonsInContainer(containerId) {
-  const buttons = {};
-  document.querySelectorAll(`#${containerId} button[id]`).forEach((btn) => {
-    buttons[btn.id] = btn;
-  });
-
-  return buttons;
-}
-
-function initActionButtons(buttons, actionGenus, getAction, handleAction) {
-  Object.keys(buttons).forEach((btnId) => {
-    buttons[btnId].addEventListener("click", () =>
-      handleAction(getAction(btnId, { actionGenus }))
-    );
-  });
-}
+import { getAllButtonsInContainer, initActionButtons } from "./helpers.js";
 
 class AdminActions {
   constructor() {
@@ -29,6 +14,9 @@ class AdminActions {
 
     this.sourceButtons = getAllButtonsInContainer("sourceButtonsContainer");
     this.additionalToolsButtons = getAllButtonsInContainer("additionalTools");
+
+    this.responsesPanel = document.getElementById("responsesPanel");
+    this.toggleResponsesBtn = document.getElementById("toggleResponsesBtn");
   }
 
   init(handleAction) {
@@ -55,6 +43,12 @@ class AdminActions {
     this.deleteAllResetIds.addEventListener("click", () =>
       handleAction(this.getAction("deleteAllResetIds"))
     );
+
+    this.toggleResponsesBtn.addEventListener("click", () => {
+      this.responsesPanel.classList.toggle("collapsed");
+      this.toggleResponsesBtn.textContent =
+        this.responsesPanel.classList.contains("collapsed") ? "▼" : "▲";
+    });
   }
 }
 

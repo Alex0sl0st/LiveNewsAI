@@ -1,6 +1,6 @@
 import { postNews } from "./api.js";
-import { adminUI } from "./AdminUI.js";
-import { adminActions } from "./AdminActions.js";
+import { adminUI } from "./AdminUI/AdminUI.js";
+import { adminActions } from "./AdminActions/AdminActions.js";
 
 function handleAction(action) {
   postNews(action).then(({ data: gotNews, success, resType, massage }) => {
