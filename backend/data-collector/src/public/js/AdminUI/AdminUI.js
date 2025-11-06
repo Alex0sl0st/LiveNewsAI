@@ -5,12 +5,22 @@ class AdminUI {
   constructor() {
     this.gotDataContainer = document.querySelector("#gotDataContainer");
     this.lastMessageContainer = document.querySelector("#lastMessageContainer");
+    this.lastAnsweringTimeContainer = document.querySelector(
+      "#lastAnsweringTimeContainer"
+    );
 
     this.responsesContent = document.getElementById("responsesContent");
   }
 
   addLastMessage(message = "", container = this.lastMessageContainer) {
     container.innerHTML = `<h2>Last Message:<br>${message}</h2>`;
+  }
+
+  addLastAnsweringTime(
+    answeringTime = 0,
+    container = this.lastAnsweringTimeContainer
+  ) {
+    container.innerHTML = `<h2>Last Answering Time:<br>${answeringTime}</h2>`;
   }
 
   getNewsInnerHTML(news, newsNumber = 1) {
