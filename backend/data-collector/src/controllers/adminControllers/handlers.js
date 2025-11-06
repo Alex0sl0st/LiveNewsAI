@@ -70,9 +70,8 @@ export function sourceAP(res) {
 export function summarizeNano(res) {
   newsService.getAll().then(async (news) => {
     console.log("Start generating");
-    // const summarizes = await chatGptService.summarizeNews(news[6].content);
+    const summarizes = await chatGptService.summarizeNews(news[6].content);
 
-    const summarizes = "123567";
     // console.log(JSON.stringify(summarizes, null, 2));
     sendResponse(res, {
       massage: "summarizeNano",
