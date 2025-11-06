@@ -134,13 +134,13 @@ h1 {
 }
 
 .toggleResponsesBtn {
-  position: absolute;
+  /* position: absolute;
   top: 5px;
-  left: 5px;
+  left: 5px; */
   border: none;
   background: #333;
   color: white;
-  padding: 3px 6px;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -154,4 +154,8 @@ h1 {
 
 .responsesPanel.collapsed .responsesContent {
   display: none;
+}
+
+.responsesContent {
+  margin: 10px 0;
 }

@@ -11,7 +11,7 @@ class ChatGptService {
 
   async summarizeNews(newsText) {
     try {
-      console.log(newsText);
+      // console.log(newsText);
       const response = await this.openai.responses.create({
         model: "gpt-5-nano",
         input: [

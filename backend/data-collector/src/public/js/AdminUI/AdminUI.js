@@ -1,9 +1,12 @@
 import { createExpandTextBlock, attachExpandHandlers } from "./helpers.js";
+import { safeFormatTextForHtml } from "../../utils/safeFormatText.js";
 
 class AdminUI {
   constructor() {
     this.gotDataContainer = document.querySelector("#gotDataContainer");
     this.lastMessageContainer = document.querySelector("#lastMessageContainer");
+
+    this.responsesContent = document.getElementById("responsesContent");
   }
 
   addLastMessage(message = "", container = this.lastMessageContainer) {
@@ -55,6 +58,11 @@ class AdminUI {
 
       attachExpandHandlers(block);
     });
+  }
+
+  renderPanelContent(dataToRender) {
+    const saveData = safeFormatTextForHtml(dataToRender);
+    this.responsesContent.innerHTML = `<div>${saveData}</div>`;
   }
 }
 

@@ -1,26 +1,30 @@
 import { newsService } from "../../shared.js";
 import { newsManagerService } from "../../services/NewsManagerService.js";
 import { newsSourcesConfig } from "../../config/external.js";
-import {
-  chatGptService,
-  ChatGptService,
-} from "../../../../shared/src/services/chatGptService.js";
+import { chatGptService } from "../../../../shared/src/services/chatGptService.js";
 
 function sendResponse(
   res,
-  { news = [], success = true, resType = "data", massage = "" }
+  {
+    data = [],
+    success = true,
+    resType = "data",
+    massage = "",
+    toDisplayOnPanel = false,
+  }
 ) {
   res.json({
     success,
-    data: news,
+    data,
     resType,
     massage,
+    toDisplayOnPanel,
   });
 }
 
 export function getAll(res) {
   newsService.getAll().then((news) => {
-    sendResponse(res, { news, massage: "getAll" });
+    sendResponse(res, { data: news, massage: "getAll" });
   });
 }
 
@@ -66,8 +70,15 @@ export function sourceAP(res) {
 export function summarizeNano(res) {
   newsService.getAll().then(async (news) => {
     console.log("Start generating");
-    const summarizes = await chatGptService.summarizeNews(news[6].content);
+    // const summarizes = await chatGptService.summarizeNews(news[6].content);
+
+    const summarizes = "123567";
     // console.log(JSON.stringify(summarizes, null, 2));
-    sendResponse(res, { massage: "summarizeNano", resType: "result" });
+    sendResponse(res, {
+      massage: "summarizeNano",
+      resType: "data",
+      toDisplayOnPanel: true,
+      data: summarizes,
+    });
   });
 }
