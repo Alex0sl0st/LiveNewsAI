@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI } from "@google/genai";
 
 class ChatGptService {
   constructor() {
@@ -11,6 +12,10 @@ class ChatGptService {
 
     this.anthropic = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+
+    this.gemini = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
     });
 
     this.summarizeRulesText =
@@ -34,7 +39,7 @@ class ChatGptService {
   }
 
   async summarizeNews(newsText) {
-    // console.log(this.summarizePromptSystemInput.content);
+    // console.log(this.summarizeRulesText);
     try {
       // console.log(newsText);
       const response = await this.openai.responses.create({
@@ -78,6 +83,23 @@ class ChatGptService {
       return response.content[0]?.text?.trim() || "";
     } catch (error) {
       console.error("❌ Claude summarize error:", error);
+      return null;
+    }
+  }
+
+  async summarizeNewsGemini(newsText) {
+    try {
+      const response = await this.gemini.models.generateContent({
+        model: "gemini-2.5-flash-lite",
+        contents:
+          this.summarizeRulesText +
+          "\n\n" +
+          `Summarize the following text:\n\n${newsText}`,
+      });
+
+      return response.text.trim();
+    } catch (error) {
+      console.error("❌ Gemini summarize error:", error);
       return null;
     }
   }

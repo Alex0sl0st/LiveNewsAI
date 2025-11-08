@@ -72,18 +72,25 @@ export function summarizeNano(res) {
     console.log("Start generating");
     // const summarizes = await chatGptService.summarizeNews(news[6].content);
 
-    const selectedNews = news.slice(0, 110);
+    const selectedNews = news.slice(0, 320);
 
     const summariesArray = await Promise.all(
       selectedNews.map(async (item, i) => {
         console.log(`🧠 Summarizing news #${i + 1}`);
-        return await chatGptService.summarizeNews(item.content);
+        return await chatGptService.summarizeNewsGemini(item.content);
       })
     );
 
-    const summarizes = summariesArray.join(
-      "\n\n---------------------------\n\n"
-    );
+    const summarizes = summariesArray.reduce((acc, cur, index) => {
+      acc += cur;
+      acc += `\n\n${index} ---------------------------\n\n`;
+
+      return acc;
+    }, "");
+
+    // const summarizes = summariesArray.join(
+    //   "\n\n---------------------------\n\n"
+    // );
 
     sendResponse(res, {
       massage: "summarizeNano",
