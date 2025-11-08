@@ -1,39 +1,53 @@
 import "dotenv/config";
 
 import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
 class ChatGptService {
   constructor() {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
+
+    this.anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+
+    this.summarizeRulesText =
+      "You are an expert summarization system. " +
+      "Your goal is to produce the most information-dense and concise summary possible. " +
+      "Keep all key facts, names, numbers, and relationships. " +
+      "Be as short as possible, but as long as needed to preserve all crucial details. " +
+      "Use neutral, factual language without introductions or commentary.";
+
+    this.getSummarizeRulesPrompt = (role) => {
+      const content = this.summarizeRulesText;
+
+      return { role, content };
+    };
+
+    this.getSummarizeMassagePrompt = (role, data) => {
+      const content = `Summarize the following text:\n\n${data}`;
+
+      return { role, content };
+    };
   }
 
   async summarizeNews(newsText) {
+    // console.log(this.summarizePromptSystemInput.content);
     try {
       // console.log(newsText);
       const response = await this.openai.responses.create({
         model: "gpt-5-nano",
         input: [
-          {
-            role: "system",
-            content:
-              "You are an expert summarization system. " +
-              "Your goal is to produce the most information-dense and concise summary possible. " +
-              "Keep all key facts, names, numbers, and relationships. " +
-              "Be as short as possible, but as long as needed to preserve all crucial details. " +
-              "Use neutral, factual language without introductions or commentary.",
-          },
-          {
-            role: "user",
-            content: `Summarize the following text:\n\n${newsText}`,
-          },
+          this.getSummarizeRulesPrompt("system"),
+          this.getSummarizeMassagePrompt("user", newsText),
         ],
       });
 
-      console.log(response);
+      // console.log(response);
 
-      console.log(111111, response.output_text);
+      // console.log(111111, response.output_text);
 
       return response.output_text.trim();
     } catch (error) {
@@ -42,31 +56,28 @@ class ChatGptService {
     }
   }
 
-  async fetchChatGptAPI(newsText) {
-    // console.log(newsText, 123);
+  async summarizeNewsClaude(newsText) {
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: "gpt-4o-mini", // швидший і дешевший, але можеш лишити gpt-4o для кращої якості
+      const response = await this.anthropic.messages.create({
+        model: "claude-3-5-haiku-20241022",
+        max_tokens: 800,
         messages: [
           {
-            role: "system",
-            content:
-              "Ти розумний асистент, який стисло і зрозуміло підсумовує новини. " +
-              "Форматуй відповідь у 3–5 коротких реченнях, без води, тільки головне. " +
-              "Відповідь має бути нейтральною і простою для читача.",
-          },
-          {
             role: "user",
-            content: `Ось текст новини або добірка новин:\n\n${newsText}\n\nЗроби короткий підсумок.`,
+            content:
+              "You are an expert summarization system. " +
+              "Your goal is to produce the most information-dense and concise summary possible. " +
+              "Keep all key facts, names, numbers, and relationships. " +
+              "Be as short as possible, but as long as needed to preserve all crucial details. " +
+              "Use neutral, factual language without introductions or commentary.\n\n" +
+              `Summarize the following text:\n\n${newsText}`,
           },
         ],
-        temperature: 0.4, // менше випадковості → чіткіші підсумки
-        max_tokens: 300, // обмеження на довжину відповіді
       });
 
-      return completion.choices[0].message.content.trim();
-    } catch (err) {
-      console.error("❌ OpenAI error:", err);
+      return response.content[0]?.text?.trim() || "";
+    } catch (error) {
+      console.error("❌ Claude summarize error:", error);
       return null;
     }
   }
@@ -75,3 +86,34 @@ class ChatGptService {
 const chatGptService = new ChatGptService();
 
 export { chatGptService, ChatGptService };
+
+// async fetchChatGptAPI(newsText) {
+//   // console.log(newsText, 123);
+
+//   console.log();
+//   try {
+//     const completion = await this.openai.chat.completions.create({
+//       model: "gpt-4o-mini", // швидший і дешевший, але можеш лишити gpt-4o для кращої якості
+//       messages: [
+//         {
+//           role: "system",
+//           content:
+//             "Ти розумний асистент, який стисло і зрозуміло підсумовує новини. " +
+//             "Форматуй відповідь у 3–5 коротких реченнях, без води, тільки головне. " +
+//             "Відповідь має бути нейтральною і простою для читача.",
+//         },
+//         {
+//           role: "user",
+//           content: `Ось текст новини або добірка новин:\n\n${newsText}\n\nЗроби короткий підсумок.`,
+//         },
+//       ],
+//       temperature: 0.4, // менше випадковості → чіткіші підсумки
+//       max_tokens: 300, // обмеження на довжину відповіді
+//     });
+
+//     return completion.choices[0].message.content.trim();
+//   } catch (err) {
+//     console.error("❌ OpenAI error:", err);
+//     return null;
+//   }
+// }

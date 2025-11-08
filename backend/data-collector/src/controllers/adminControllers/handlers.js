@@ -70,9 +70,21 @@ export function sourceAP(res) {
 export function summarizeNano(res) {
   newsService.getAll().then(async (news) => {
     console.log("Start generating");
-    const summarizes = await chatGptService.summarizeNews(news[6].content);
+    // const summarizes = await chatGptService.summarizeNews(news[6].content);
 
-    // console.log(JSON.stringify(summarizes, null, 2));
+    const selectedNews = news.slice(0, 110);
+
+    const summariesArray = await Promise.all(
+      selectedNews.map(async (item, i) => {
+        console.log(`🧠 Summarizing news #${i + 1}`);
+        return await chatGptService.summarizeNews(item.content);
+      })
+    );
+
+    const summarizes = summariesArray.join(
+      "\n\n---------------------------\n\n"
+    );
+
     sendResponse(res, {
       massage: "summarizeNano",
       resType: "data",
