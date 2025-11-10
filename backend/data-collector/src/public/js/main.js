@@ -12,10 +12,9 @@ function handleAction(action) {
       if (!success) return;
 
       if (toDisplayOnPanel) {
-        console.log(data);
         adminUI.renderPanelContent(data);
       } else if (resType === "data") {
-        adminUI.renderNews(data);
+        adminUI.displayNews(data);
       }
     }
   );

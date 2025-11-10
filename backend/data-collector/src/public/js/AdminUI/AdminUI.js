@@ -1,5 +1,7 @@
 import { createExpandTextBlock, attachExpandHandlers } from "./helpers.js";
 import { safeFormatTextForHtml } from "../../utils/safeFormatText.js";
+import { Pagination } from "./Pagination/Pagination.js";
+import { renderPaginator } from "./Pagination/paginatorView.js";
 
 class AdminUI {
   constructor() {
@@ -10,6 +12,17 @@ class AdminUI {
     );
 
     this.responsesContent = document.getElementById("responsesContent");
+
+    this.newsPaginationContainer = document.getElementById(
+      "newsPaginationContainer"
+    );
+
+    this.newsPagination = new Pagination({
+      items: [],
+      pageSize: 50,
+      onChange: (state) => this.onPageChange(state),
+      reverseItems: false,
+    });
   }
 
   addLastMessage(message = "", container = this.lastMessageContainer) {
@@ -58,21 +71,42 @@ class AdminUI {
     return html;
   }
 
-  renderNews(newsList, container = this.gotDataContainer) {
+  renderPanelContent(dataToRender) {
+    const saveData = safeFormatTextForHtml(dataToRender);
+    this.responsesContent.innerHTML = `<div>${saveData}</div>`;
+  }
+
+  displayNews(newsList) {
+    this.newsPagination.setItems(newsList);
+  }
+
+  renderNews(
+    newsList,
+    container = this.gotDataContainer,
+    currentPage = 1,
+    pageSize = 1
+  ) {
     container.innerHTML = "";
     newsList.forEach((news, index) => {
       const block = document.createElement("div");
       block.classList.add("singleNewsBlock");
-      block.innerHTML = this.getNewsInnerHTML(news, newsList.length - index);
+      block.innerHTML = this.getNewsInnerHTML(
+        news,
+        index + 1 + (currentPage - 1) * pageSize
+      );
       container.appendChild(block);
 
       attachExpandHandlers(block);
     });
   }
 
-  renderPanelContent(dataToRender) {
-    const saveData = safeFormatTextForHtml(dataToRender);
-    this.responsesContent.innerHTML = `<div>${saveData}</div>`;
+  onPageChange({ items, currentPage, pageSize }) {
+    this.renderNews(items, this.gotDataContainer, currentPage, pageSize);
+
+    renderPaginator({
+      pagination: this.newsPagination,
+      paginationContainer: this.newsPaginationContainer,
+    });
   }
 }
 

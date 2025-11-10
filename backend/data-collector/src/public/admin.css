@@ -166,3 +166,26 @@ h1 {
 .responsesContent {
   margin: 10px 0;
 }
+
+.paginationContainer {
+  width: 90%;
+  margin: 12px auto;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.pageBtn {
+  background: #6969d5;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pageBtn[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+.pageInfo {
+  color: #fff;
+}
