@@ -10,6 +10,8 @@ export class News {
     [COL.PUBLISHED_AT]: published_at,
     [COL.CREATED_AT]: created_at,
     [COL.IMAGES]: images,
+    [COL.CATEGORY_ID]: category_id,
+    [COL.RELEVANT_CATEGORIES]: relevant_categories,
   }) {
     this.id = id;
     this.title = title;
@@ -20,6 +22,8 @@ export class News {
     this.publishedAt = published_at;
     this.createdAt = created_at;
     this.images = images;
+    this.category_id = category_id;
+    this.relevant_categories = relevant_categories;
   }
 
   toJSON() {
@@ -33,6 +37,8 @@ export class News {
       publishedAt: this.publishedAt,
       createdAt: this.createdAt,
       images: this.images,
+      category_id: this.category_id,
+      relevant_categories: this.relevant_categories,
     };
   }
 
@@ -47,6 +53,8 @@ export class News {
       [COL.PUBLISHED_AT]: this.publishedAt,
       [COL.CREATED_AT]: this.createdAt,
       [COL.IMAGES]: JSON.stringify(this.images),
+      [COL.CATEGORY_ID]: this.category_id,
+      [COL.RELEVANT_CATEGORIES]: this.relevant_categories,
     };
   }
 

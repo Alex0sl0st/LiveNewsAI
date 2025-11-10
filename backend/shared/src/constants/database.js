@@ -9,6 +9,8 @@ export const NEWS_COLUMNS = {
   PUBLISHED_AT: "published_at",
   CREATED_AT: "created_at",
   IMAGES: "images",
+  CATEGORY_ID: "category_id",
+  RELEVANT_CATEGORIES: "relevant_categories",
 };
 
 export const NEWS_TABLE = "news";
