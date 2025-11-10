@@ -71,7 +71,17 @@ class AdminUI {
     return html;
   }
 
-  renderPanelContent(dataToRender) {
+  renderPanelContent(data, massage) {
+    let dataToRender = data;
+    if (massage === "summarize") {
+      dataToRender = data.reduce((acc, cur, index) => {
+        acc += JSON.stringify(cur);
+        acc += `\n\n${index} ---------------------------\n\n`;
+
+        return acc;
+      }, "");
+    }
+
     const saveData = safeFormatTextForHtml(dataToRender);
     this.responsesContent.innerHTML = `<div>${saveData}</div>`;
   }

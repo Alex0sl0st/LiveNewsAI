@@ -94,6 +94,42 @@ class NewsService {
       return false;
     }
   }
+
+  async updateNewsCategory(newsId, mainSlug, relevantSlugs = []) {
+    const mainRes = await this.query(
+      `SELECT id FROM news_categories WHERE slug = $1`,
+      [mainSlug]
+    );
+    if (!mainRes.success || mainRes.data.rowCount === 0) {
+      console.log(`Category not found for slug: ${mainSlug}`);
+      return null;
+    }
+    const mainCategoryId = mainRes.data.rows[0].id;
+
+    // // 2. Знайти id релевантних категорій
+    // let relevantIds = [];
+    // if (relevantSlugs.length > 0) {
+    //   const relevantRes = await this.query(
+    //     `SELECT id FROM news_categories WHERE slug = ANY($1)`,
+    //     [relevantSlugs]
+    //   );
+    //   relevantIds = relevantRes.data.rows.map((r) => r.id);
+    // }
+
+    // 3. Оновити новину
+    const updateRes = await this.query(
+      `UPDATE ${NEWS_TABLE}
+       SET ${COL.CATEGORY_ID} = $1,
+           ${COL.RELEVANT_CATEGORIES} = $2
+       WHERE id = $3
+       RETURNING *`,
+      [mainCategoryId, [], newsId]
+    );
+
+    if (!updateRes.success || !(updateRes.data.rowCount > 0)) {
+      console.log(`Failed to update category for news id=${newsId}`);
+    }
+  }
 }
 
 export const newsService = new NewsService();

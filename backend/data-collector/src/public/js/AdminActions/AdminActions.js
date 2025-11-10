@@ -7,6 +7,8 @@ class AdminActions {
     this.deleteDuplicates = document.querySelector("#deleteDuplicates");
     this.deleteAllResetIds = document.querySelector("#deleteAllResetIds");
 
+    this.summarizeNews = document.querySelector("#summarizeNews");
+
     this.getAction = (type, payload = {}) => ({
       type,
       payload,
@@ -28,7 +30,7 @@ class AdminActions {
     );
     initActionButtons(
       this.additionalToolsButtons,
-      "extraTools",
+      "extraTool",
       this.getAction,
       handleAction
     );
@@ -42,6 +44,10 @@ class AdminActions {
     );
     this.deleteAllResetIds.addEventListener("click", () =>
       handleAction(this.getAction("deleteAllResetIds"))
+    );
+
+    this.summarizeNews.addEventListener("click", () =>
+      handleAction(this.getAction("summarizeNews"))
     );
 
     this.toggleResponsesBtn.addEventListener("click", () => {

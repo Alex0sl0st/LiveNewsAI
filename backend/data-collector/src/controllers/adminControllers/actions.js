@@ -13,6 +13,10 @@ export function doNewsAction(req, res) {
   if (payload.actionGenus === "source") {
     const handler = sourceHandlers[type.toLowerCase()];
     handler ? handler() : handlers.unknown(res);
+  } else if (payload.actionGenus === "extraTool") {
+    if (type === "summarize") {
+      handlers.summarize(res);
+    }
   } else {
     if (type === "getAll") {
       handlers.getAll(res);
@@ -20,8 +24,8 @@ export function doNewsAction(req, res) {
       handlers.deleteDuplicates(res);
     } else if (type === "deleteAllResetIds") {
       handlers.deleteAllResetIds(res);
-    } else if (type === "summarize") {
-      handlers.summarize(res);
+    } else if (type === "summarizeNews") {
+      handlers.summarize(res, true);
     } else {
       handlers.unknown(res);
     }

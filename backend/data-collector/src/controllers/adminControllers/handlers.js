@@ -66,36 +66,36 @@ export function sourceAP(res) {
   });
 }
 
-export function summarize(res) {
+export function summarize(res, saveToDb = false) {
   newsService.getAll().then(async (news) => {
     console.log("Start generating");
-    // const summarizes = await aiApiService.summarizeNews(news[6].content);
 
     const selectedNews = news.slice(0, 20);
 
     const summariesArray = await Promise.all(
       selectedNews.map(async (item, i) => {
         console.log(`🧠 Summarizing news #${i + 1}`);
-        return await aiApiService.summarizeNewsGemini(item.content);
+        const raw = await aiApiService.summarizeNewsGemini(item.content);
+        const summary = JSON.parse(
+          raw
+            .replace(/```json\s*/gi, "")
+            .replace(/```/g, "")
+            .trim()
+        );
+
+        if (saveToDb) {
+          await newsService.updateNewsCategory(item.id, summary.main_category);
+        }
+
+        return summary;
       })
     );
-
-    const summarizes = summariesArray.reduce((acc, cur, index) => {
-      acc += cur;
-      acc += `\n\n${index} ---------------------------\n\n`;
-
-      return acc;
-    }, "");
-
-    // const summarizes = summariesArray.join(
-    //   "\n\n---------------------------\n\n"
-    // );
 
     sendResponse(res, {
       massage: "summarize",
       resType: "data",
       toDisplayOnPanel: true,
-      data: summarizes,
+      data: summariesArray,
     });
   });
 }

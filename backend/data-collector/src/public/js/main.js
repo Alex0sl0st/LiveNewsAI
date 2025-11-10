@@ -12,7 +12,7 @@ function handleAction(action) {
       if (!success) return;
 
       if (toDisplayOnPanel) {
-        adminUI.renderPanelContent(data);
+        adminUI.renderPanelContent(data, massage);
       } else if (resType === "data") {
         adminUI.displayNews(data);
       }
