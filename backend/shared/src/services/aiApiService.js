@@ -36,6 +36,29 @@ class AiApiService {
 
       return { role, content };
     };
+
+    this.summarizeTestRulesText = `
+You are an expert system for summarizing and classifying news articles.
+
+Your objectives:
+1. Summarize the article in the most concise and information-dense way possible.
+   - Include all essential facts, names, numbers, dates, and relationships.
+   - Use neutral and factual language only.
+   - Avoid introductions, opinions, or extra commentary.
+
+2. Classify the article by topic.
+   - Identify exactly one main category.
+   - Optionally list up to three secondary relevant categories.
+   - Use only these predefined categories:
+     [World, Politics, Economy & Business, Science & Technology, Society, Law & Justice, Health, Environment, Sports, Culture & Entertainment, Lifestyle, Technology Business, War & Security, Opinion & Analysis]
+
+Return the result strictly in valid JSON (no extra text):
+{
+  "summary": "...",
+  "main_category": "Politics",
+  "relevant_categories": ["Science & Technology", "War & Security"]
+}
+`;
   }
 
   async summarizeNewsChatGpt(newsText) {
@@ -88,13 +111,17 @@ class AiApiService {
   }
 
   async summarizeNewsGemini(newsText) {
+    console.log(
+      this.summarizeRulesText + "\n\n" + `Summarize the following text:`
+    );
     try {
       const response = await this.gemini.models.generateContent({
         model: "gemini-2.5-flash-lite",
         contents:
-          this.summarizeRulesText +
-          "\n\n" +
-          `Summarize the following text:\n\n${newsText}`,
+          this.summarizeTestRulesText +
+          "\n\nARTICLE:\n" +
+          newsText +
+          "\n\nReturn only the JSON result as specified above.",
       });
 
       return response.text.trim();
@@ -102,6 +129,14 @@ class AiApiService {
       console.error("❌ Gemini summarize error:", error);
       return null;
     }
+
+    // const response = await this.gemini.models.generateContent({
+    //   model: "gemini-2.5-flash-lite",
+    //   contents:
+    //     this.summarizeRulesText +
+    //     "\n\n" +
+    //     `Summarize the following text:\n\n${newsText}`,
+    // });
   }
 }
 
