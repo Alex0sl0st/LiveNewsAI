@@ -20,8 +20,8 @@ export function doNewsAction(req, res) {
       handlers.deleteDuplicates(res);
     } else if (type === "deleteAllResetIds") {
       handlers.deleteAllResetIds(res);
-    } else if (type === "summarizeNano") {
-      handlers.summarizeNano(res);
+    } else if (type === "summarize") {
+      handlers.summarize(res);
     } else {
       handlers.unknown(res);
     }

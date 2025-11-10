@@ -1,3 +1,3 @@
-export { chatGptService } from "../../shared/src/services/chatGptService.js";
+export { aiApiService } from "../../shared/src/services/aiApiService.js";
 
 export { newsService } from "../../shared/src/services/NewsService.js";

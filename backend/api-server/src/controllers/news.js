@@ -1,8 +1,8 @@
 import { newsService } from "../shared.js";
-import { chatGptService } from "../shared.js";
+import { aiApiService } from "../shared.js";
 
 export function chatGptAPI(req, res) {
-  chatGptService
+  aiApiService
     .fetchChatGptAPI(req.body.newsText)
     .then((answer) => res.json(answer));
 }

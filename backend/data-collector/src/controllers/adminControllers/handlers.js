@@ -1,7 +1,6 @@
-import { newsService } from "../../shared.js";
+import { newsService, aiApiService } from "../../shared.js";
 import { newsManagerService } from "../../services/NewsManagerService.js";
 import { newsSourcesConfig } from "../../config/external.js";
-import { chatGptService } from "../../../../shared/src/services/chatGptService.js";
 
 function sendResponse(
   res,
@@ -67,17 +66,17 @@ export function sourceAP(res) {
   });
 }
 
-export function summarizeNano(res) {
+export function summarize(res) {
   newsService.getAll().then(async (news) => {
     console.log("Start generating");
-    // const summarizes = await chatGptService.summarizeNews(news[6].content);
+    // const summarizes = await aiApiService.summarizeNews(news[6].content);
 
-    const selectedNews = news.slice(0, 320);
+    const selectedNews = news.slice(0, 20);
 
     const summariesArray = await Promise.all(
       selectedNews.map(async (item, i) => {
         console.log(`🧠 Summarizing news #${i + 1}`);
-        return await chatGptService.summarizeNewsGemini(item.content);
+        return await aiApiService.summarizeNewsGemini(item.content);
       })
     );
 
@@ -93,7 +92,7 @@ export function summarizeNano(res) {
     // );
 
     sendResponse(res, {
-      massage: "summarizeNano",
+      massage: "summarize",
       resType: "data",
       toDisplayOnPanel: true,
       data: summarizes,

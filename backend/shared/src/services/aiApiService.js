@@ -4,7 +4,7 @@ import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenAI } from "@google/genai";
 
-class ChatGptService {
+class AiApiService {
   constructor() {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -38,7 +38,7 @@ class ChatGptService {
     };
   }
 
-  async summarizeNews(newsText) {
+  async summarizeNewsChatGpt(newsText) {
     // console.log(this.summarizeRulesText);
     try {
       // console.log(newsText);
@@ -105,9 +105,9 @@ class ChatGptService {
   }
 }
 
-const chatGptService = new ChatGptService();
+const aiApiService = new AiApiService();
 
-export { chatGptService, ChatGptService };
+export { aiApiService, AiApiService };
 
 // async fetchChatGptAPI(newsText) {
 //   // console.log(newsText, 123);
