@@ -42,10 +42,13 @@ export async function getArticleUrls(params) {
       sitemapUrl,
     });
 
-    const monthUrls = articleUrls.slice(0, articlesPerMonth);
+    // const monthUrls = articleUrls.slice(0, articlesPerMonth);
+    const monthUrls = articleUrls;
 
     allArticleUrls = [...allArticleUrls, ...monthUrls];
   }
+
+  console.log(allArticleUrls.length);
 
   return allArticleUrls;
 }
