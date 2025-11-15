@@ -7,18 +7,10 @@ import { getArticleUrls } from "./sources/sitemap/getArticleUrls.js";
 import { extractPublishDate } from "./extractors/date.js";
 import { extractArticleText } from "./extractors/articleText.js";
 import { extractArticleImages } from "./extractors/images/index.js";
+import { handleRateLimit } from "./handleRateLimit.js";
 import { tempUrlsArray } from "./tempUrlsArray.js";
 
-const limiter = new Bottleneck({
-  maxConcurrent: 300, // максимум 3 запити одночасно
-  minTime: 0.1, // 0.8 секунди між новими запитами
-});
-
-const scheduleParams = { expiration: 60_000 };
-let isPaused = false;
-const pause429Duration = 120_000;
-
-// 520 requests are limit fro AP
+import { filterFulfilledPromises } from "../../../utils/promises.js";
 class ApNews extends BaseNewsSource {
   constructor() {
     super(getSourceConfig("ap"));
@@ -26,47 +18,82 @@ class ApNews extends BaseNewsSource {
     this.sitemapIndex = this.config.urls.sitemapIndex;
 
     this.articlesPerMonth = 10;
-    this.delayBetweenArticles = 500;
     this.articlesYear = "2024";
 
     this.configParams = {
       baseHttpClient: this.baseHttpClient,
       sitemapIndexUrl: this.sitemapIndex,
       articlesPerMonth: this.articlesPerMonth,
-      delayBetweenArticles: this.delayBetweenArticles,
       articleImageLimit: this.articleImageLimit,
       articlesYear: this.articlesYear,
     };
 
+    this.batchSize = 200;
+    this.minDelayBetweenFetchArticles = 0.1;
+    this.maxConcurrentFetches = 300;
+
+    this.pause429Duration = 120_000;
+    this.fetchExpirationTime = 60_000;
+
+    this.scheduleParams = { expiration: this.fetchExpirationTime };
+
+    this.limiter = new Bottleneck({
+      maxConcurrent: this.maxConcurrentFetches,
+      minTime: this.minDelayBetweenFetchArticles,
+    });
+
     this.fetchedArticlesCounter = 0;
     this.rescheduledFetchedArticlesCounter = 0;
+
+    this.isRequestsPaused = false;
   }
 
-  async fetchNews() {
+  async fetchNews(saveDuringFetch = true) {
     try {
       console.log("[AP] Starting news fetch...");
-
-      // const urlsToParse = await getArticleUrls(this.configParams);
-      const urlsToParse = tempUrlsArray;
+      const startFetchingNewsTime = Date.now();
 
       this.fetchedArticlesCounter = 0;
       this.rescheduledFetchedArticlesCounter = 0;
-      // const articles = await Promise.allSettled(
-      //   urlsToParse.map((url) =>
-      //     this.rssPLimit(() => this.fetchFullArticle(url))
-      //   )
-      // );
-      const articles = await Promise.allSettled(
-        urlsToParse.map((url) =>
-          limiter.schedule(scheduleParams, () => this.fetchFullArticle(url))
-        )
+
+      // const urlsToParse = await getArticleUrls(this.configParams);
+      const urlsToParse = tempUrlsArray.slice(0, 400);
+
+      const successfulArticles = [];
+      for (let i = 0; i < urlsToParse.length; i += this.batchSize) {
+        const batch = urlsToParse.slice(i, i + this.batchSize);
+
+        const batchNews = filterFulfilledPromises(
+          await Promise.allSettled(
+            batch.map((url) =>
+              this.limiter.schedule(this.scheduleParams, () =>
+                this.fetchFullArticle(url)
+              )
+            )
+          )
+        );
+
+        if (saveDuringFetch) {
+          const startSavingBatchTime = Date.now();
+          console.log(`Start saving batch - ${i}`);
+          await this.saveToDB(batchNews);
+          console.log(
+            `Batch - ${i} Saving time - ${
+              (Date.now() - startSavingBatchTime) / 1000
+            }`
+          );
+        } else {
+          successfulArticles.push(...batchNews);
+        }
+
+        console.log(`----------------- Last Batch - ${i}`);
+      }
+
+      console.log(
+        `[AP] Total articles fetched: ${
+          successfulArticles.length
+        }. Duration - ${(Date.now() - startFetchingNewsTime) / 1000}`
       );
-
-      const successfulArticles = articles
-        .filter((r) => r.status === "fulfilled" && r.value)
-        .map((r) => r.value);
-
-      console.log(`[AP] Total articles fetched: ${successfulArticles.length}`);
       return successfulArticles;
     } catch (err) {
       console.error(`[AP] Error fetching news:`, err.message);
@@ -96,17 +123,21 @@ class ApNews extends BaseNewsSource {
         images,
       });
     } catch (err) {
-      // якщо помилка 429
       if (err.response?.status === 429) {
         console.warn(`⚠️ 429 Too Many Requests at: ${url}`);
-        await this.handleRateLimit(url);
+        const ctx = {
+          limiter: this.limiter,
+          scheduleParams: this.scheduleParams,
+          isPaused: () => this.isRequestsPaused,
+          setIsPaused: (v) => (this.isRequestsPaused = v),
+          pause429Duration: this.pause429Duration,
+        };
+        await handleRateLimit(ctx, () => this.fetchFullArticle(url));
         was429error = true;
       } else {
         console.error(`[AP] Error fetching article:`, err.message);
       }
       return null;
-      // console.error(`[AP] Error fetching article:`, err.message);
-      // return null;
     } finally {
       if (!was429error) {
         this.fetchedArticlesCounter += 1;
@@ -127,35 +158,6 @@ class ApNews extends BaseNewsSource {
         );
       }
     }
-  }
-
-  // ==========================
-  async handleRateLimit(url) {
-    // якщо вже стоїть пауза — просто чекаємо
-    if (isPaused) {
-      console.log("⏳ Bottleneck already paused, waiting...");
-      // додаємо цю URL пізніше, коли черга відновиться
-      limiter.schedule(scheduleParams, () => this.fetchFullArticle(url));
-      return;
-    }
-
-    console.log("🛑 Received 429 — pausing requests for 2 minutes...");
-    limiter.updateSettings({ reservoir: 0 });
-
-    // ставимо прапорець
-    isPaused = true;
-
-    // чекаємо 2 хвилини (120000 мс)
-    await new Promise((res) => setTimeout(res, pause429Duration));
-
-    // відновлюємо
-    limiter.updateSettings({ reservoir: null });
-    isPaused = false;
-
-    console.log("▶️ Resuming after 2-minute cooldown...");
-
-    // додаємо “проблемне” посилання назад у чергу
-    limiter.schedule(scheduleParams, () => this.fetchFullArticle(url));
   }
 }
 

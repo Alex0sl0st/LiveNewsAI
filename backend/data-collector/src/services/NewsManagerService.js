@@ -38,7 +38,7 @@ class NewsManagerService {
     await Promise.allSettled(newsPromises);
   }
 
-  async createNews(source) {
+  async createNews(source, batchSaving = false) {
     let news;
 
     source = source || this.sourcesNames.bbc;
@@ -51,14 +51,16 @@ class NewsManagerService {
         news = await this.sources.dw.fetchNews();
         break;
       case this.sourcesNames.ap:
-        news = await this.sources.ap.fetchNews();
+        news = await this.sources.ap.fetchNews(batchSaving);
         break;
       default:
         console.log(`Error: Unknown news source: ${source}`);
         return;
     }
 
-    await this.saveNewsToDB(news);
+    if (!batchSaving) {
+      await this.saveNewsToDB(news);
+    }
   }
 }
 

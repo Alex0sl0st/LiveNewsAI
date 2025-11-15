@@ -61,7 +61,7 @@ export function sourceDW(res) {
 }
 
 export function sourceAP(res) {
-  newsManagerService.createNews(newsSourcesConfig.ap.name).then(() => {
+  newsManagerService.createNews(newsSourcesConfig.ap.name, true).then(() => {
     sendResponse(res, { massage: "sourceAP", resType: "result" });
   });
 }

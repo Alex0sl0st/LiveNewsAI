@@ -1,10 +1,14 @@
 import axios from "axios";
 import pLimit from "p-limit";
+
+import { newsService } from "../../shared.js";
 class BaseNewsSource {
   constructor(config, sourceName) {
     if (!config) {
       throw new Error("Config is required for news source");
     }
+
+    this.newsService = newsService;
 
     this.config = config;
     this.sourceName = sourceName || config.name;
@@ -39,6 +43,20 @@ class BaseNewsSource {
       $("h1").first().text().trim() || $("h2").first().text().trim();
 
     return title || this.defaultTitle;
+  }
+
+  async saveToDB(news) {
+    const newsPromises = news
+      .filter((item) => item)
+      .map((singleNews) => {
+        try {
+          return this.newsService.create(singleNews);
+        } catch (err) {
+          console.log("Error in saveToDB", err);
+        }
+      });
+
+    await Promise.allSettled(newsPromises);
   }
 
   toStandardFormat({
