@@ -1,9 +1,15 @@
 async function handleRateLimit(ctx, task) {
-  const { limiter, scheduleParams, setIsPaused, pause429Duration, isPaused } =
-    ctx;
+  const {
+    limiter,
+    scheduleParams,
+    scheduleTask,
+    setIsPaused,
+    pause429Duration,
+    isPaused,
+  } = ctx;
 
   function schedule() {
-    return limiter.schedule(scheduleParams, task);
+    return scheduleTask(limiter, scheduleParams, task);
   }
 
   if (isPaused()) {
@@ -16,8 +22,6 @@ async function handleRateLimit(ctx, task) {
   limiter.updateSettings({ reservoir: 0 });
 
   setIsPaused(true);
-  console.log(isPaused());
-
   await new Promise((res) => setTimeout(res, pause429Duration));
 
   limiter.updateSettings({ reservoir: null });

@@ -1,6 +1,9 @@
 import axios from "axios";
 import pLimit from "p-limit";
 
+import Bottleneck from "bottleneck";
+const { BottleneckError } = Bottleneck;
+
 import { newsService } from "../../shared.js";
 class BaseNewsSource {
   constructor(config, sourceName) {
@@ -57,6 +60,14 @@ class BaseNewsSource {
       });
 
     await Promise.allSettled(newsPromises);
+  }
+
+  scheduleTask(limiter, scheduleParams, task) {
+    return limiter.schedule(scheduleParams, task).catch((err) => {
+      if (err instanceof BottleneckError) {
+        console.error("⏰ Bottleneck timeout error:", err.message);
+      }
+    });
   }
 
   toStandardFormat({

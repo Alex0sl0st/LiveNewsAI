@@ -28,7 +28,7 @@ class ApNews extends BaseNewsSource {
       articlesYear: this.articlesYear,
     };
 
-    this.batchSize = 200;
+    this.batchSize = 3000;
     this.minDelayBetweenFetchArticles = 0.1;
     this.maxConcurrentFetches = 300;
 
@@ -57,7 +57,7 @@ class ApNews extends BaseNewsSource {
       this.rescheduledFetchedArticlesCounter = 0;
 
       // const urlsToParse = await getArticleUrls(this.configParams);
-      const urlsToParse = tempUrlsArray.slice(0, 400);
+      const urlsToParse = tempUrlsArray.slice(0, 900);
 
       const successfulArticles = [];
       for (let i = 0; i < urlsToParse.length; i += this.batchSize) {
@@ -66,7 +66,7 @@ class ApNews extends BaseNewsSource {
         const batchNews = filterFulfilledPromises(
           await Promise.allSettled(
             batch.map((url) =>
-              this.limiter.schedule(this.scheduleParams, () =>
+              this.scheduleTask(this.limiter, this.scheduleParams, () =>
                 this.fetchFullArticle(url)
               )
             )
@@ -86,7 +86,7 @@ class ApNews extends BaseNewsSource {
           successfulArticles.push(...batchNews);
         }
 
-        console.log(`----------------- Last Batch - ${i}`);
+        console.log(`----------------- Last Batch - ${i / this.batchSize}`);
       }
 
       console.log(
@@ -128,6 +128,7 @@ class ApNews extends BaseNewsSource {
         const ctx = {
           limiter: this.limiter,
           scheduleParams: this.scheduleParams,
+          scheduleTask: this.scheduleTask,
           isPaused: () => this.isRequestsPaused,
           setIsPaused: (v) => (this.isRequestsPaused = v),
           pause429Duration: this.pause429Duration,
