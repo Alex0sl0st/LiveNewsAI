@@ -95,6 +95,28 @@ class NewsService {
     }
   }
 
+  async getByDateRange(fromDate, toDate) {
+    if (!fromDate || !toDate) {
+      console.log("❌ Missing fromDate or toDate");
+      return [];
+    }
+
+    const result = await this.query(
+      `
+      SELECT * FROM ${NEWS_TABLE}
+      WHERE ${COL.PUBLISHED_AT} BETWEEN $1 AND $2
+      ORDER BY ${COL.PUBLISHED_AT} DESC
+      `,
+      [fromDate + " 00:00:00", toDate + " 23:59:59"]
+    );
+
+    if (result.success) {
+      return result.data.rows.map((row) => new News(row));
+    } else {
+      return [];
+    }
+  }
+
   async updateNewsCategory(newsId, mainSlug, relevantSlugs = []) {
     const mainRes = await this.query(
       `SELECT id FROM news_categories WHERE slug = $1`,

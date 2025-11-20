@@ -189,3 +189,52 @@ h1 {
 .pageInfo {
   color: #fff;
 }
+
+.dateRangePanel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dateInput {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  font-size: 15px;
+  outline: none;
+  min-width: 180px;
+
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+
+  transition: all 0.2s ease;
+}
+
+.dateInput:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 6px rgba(102, 126, 234, 0.6);
+  background: #fff;
+}
+
+.filterBtn {
+  background: linear-gradient(135deg, #38b2ac 0%, #3182ce 100%);
+  border: none;
+  padding: 10px 18px;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 12px rgba(56, 178, 172, 0.35);
+}
+
+.filterBtn:hover {
+  box-shadow: 0 6px 16px rgba(49, 130, 206, 0.45);
+  background: linear-gradient(135deg, #2f9e9a 0%, #2b6cb0 100%);
+}
+
+.filterBtn:active {
+  transform: scale(0.96);
+}

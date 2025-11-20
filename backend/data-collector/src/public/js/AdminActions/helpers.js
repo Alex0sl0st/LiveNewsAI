@@ -18,3 +18,7 @@ export function initActionButtons(
     );
   });
 }
+
+export function getValueFromInput(id) {
+  return document.getElementById(id).value;
+}

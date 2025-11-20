@@ -1,4 +1,8 @@
-import { getAllButtonsInContainer, initActionButtons } from "./helpers.js";
+import {
+  getAllButtonsInContainer,
+  initActionButtons,
+  getValueFromInput,
+} from "./helpers.js";
 
 class AdminActions {
   constructor() {
@@ -8,6 +12,7 @@ class AdminActions {
     this.deleteAllResetIds = document.querySelector("#deleteAllResetIds");
 
     this.summarizeNews = document.querySelector("#summarizeNews");
+    this.filterByDateBtn = document.querySelector("#filterByDateBtn");
 
     this.getAction = (type, payload = {}) => ({
       type,
@@ -48,6 +53,15 @@ class AdminActions {
 
     this.summarizeNews.addEventListener("click", () =>
       handleAction(this.getAction("summarizeNews"))
+    );
+
+    this.filterByDateBtn.addEventListener("click", () =>
+      handleAction(
+        this.getAction("filterByDate", {
+          dateFrom: getValueFromInput("dateFrom"),
+          dateTo: getValueFromInput("dateTo"),
+        })
+      )
     );
 
     this.toggleResponsesBtn.addEventListener("click", () => {
