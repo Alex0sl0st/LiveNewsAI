@@ -1,4 +1,4 @@
-import { createExpandTextBlock, attachExpandHandlers } from "./helpers.js";
+import { createExpandableBlock, attachExpandHandlers } from "./helpers.js";
 import { safeFormatTextForHtml } from "../../utils/safeFormatText.js";
 import { Pagination } from "./Pagination/Pagination.js";
 import { renderPaginator } from "./Pagination/paginatorView.js";
@@ -41,10 +41,13 @@ class AdminUI {
 
     html += `<h3>${newsNumber}</h3>`;
 
+    let imagesBlock = "";
     news.images.forEach((image) => {
-      html += `<h4 class="imageCaption">${image.caption}</h4>`;
-      html += `<img class="newsImage" src="${image.url}" alt="${image.caption}">`;
+      imagesBlock += `<h4 class="imageCaption">${image.caption}</h4>`;
+      imagesBlock += `<img class="newsImage" src="${image.url}" alt="${image.caption}">`;
     });
+
+    html += createExpandableBlock(imagesBlock, true, "Images...");
 
     html += `<h3><strong>Title:</strong> ${news.title}</h3>`;
 
@@ -55,7 +58,7 @@ class AdminUI {
         value = value.replace(/\n\n/g, "<br><br>");
 
         html += `<p><b>${key}:</b>
-        ${createExpandTextBlock(value)}
+        ${createExpandableBlock(value)}
       </p>`;
       } else {
         let value = news[key];
@@ -63,6 +66,10 @@ class AdminUI {
           value = value.replace(/\n\n/g, "<br><br>");
         } else if (typeof value === "object") {
           value = `<span class="imagesData">${JSON.stringify(value)}</span>`;
+        }
+
+        if (key === "images") {
+          value = createExpandableBlock(value, true);
         }
         html += `<p ><b>${key}:</b> ${value}</p>`;
       }

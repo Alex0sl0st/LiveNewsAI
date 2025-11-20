@@ -1,35 +1,55 @@
 import { getShortText } from "../../utils/getShortText.js";
 import { getRandomUuid } from "../../utils/getRandomId.js";
 
-export function createExpandTextBlock(fullText) {
-  const shortText = getShortText(fullText);
-  const contentId = `content-${getRandomUuid()}`;
+export function createExpandableBlock(
+  fullContent,
+  isHtml = false,
+  shortContent = ""
+) {
+  const contentId = `expand-${getRandomUuid()}`;
+  const encodedFull = encodeURIComponent(fullContent);
 
-  const expandBlock = `
-  <button class="expandBtn" data-content-id="${contentId}" data-full-text="${fullText.replace(
-    /"/g,
-    "&quot;"
-  )}">▼</button><br>
-  <span id="${contentId}" class="contentText">${shortText}</span>`;
+  const displayShort = isHtml
+    ? shortContent
+    : shortContent || getShortText(fullContent);
 
-  return expandBlock;
+  const encodedShort = encodeURIComponent(displayShort);
+
+  return `
+    <button 
+      class="expandBtn" 
+      data-expand-target="${contentId}" 
+      data-expand-full="${encodedFull}"
+      data-expand-short="${encodedShort}"
+    >▼</button><br>
+
+    <span id="${contentId}" class="expand-content">
+      ${displayShort}
+    </span>
+  `;
 }
 
-export function attachExpandHandlers(block) {
-  const expandButtons = block.querySelectorAll(".expandBtn");
-  expandButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const contentId = button.getAttribute("data-content-id");
-      const contentSpan = block.querySelector(`#${contentId}`);
-      const fullText = button.getAttribute("data-full-text");
+export function attachExpandHandlers(root) {
+  const buttons = root.querySelectorAll(".expandBtn");
 
-      if (button.textContent === "▼") {
-        contentSpan.innerHTML = fullText;
-        button.textContent = "▲"; //Collapse
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.expandTarget;
+
+      const fullContent = decodeURIComponent(btn.dataset.expandFull);
+      const shortContent = decodeURIComponent(btn.dataset.expandShort);
+
+      const contentEl = root.querySelector(`#${targetId}`);
+      const shouldExpand = btn.textContent === "▼";
+
+      if (shouldExpand) {
+        // EXPAND
+        contentEl.innerHTML = fullContent;
+        btn.textContent = "▲";
       } else {
-        const shortText = getShortText(fullText);
-        contentSpan.innerHTML = shortText;
-        button.textContent = "▼"; //Expand
+        // COLLAPSE
+        contentEl.innerHTML = shortContent;
+        btn.textContent = "▼";
       }
     });
   });
