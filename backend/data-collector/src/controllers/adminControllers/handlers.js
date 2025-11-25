@@ -104,8 +104,11 @@ export function summarize(res, saveToDb = false) {
   });
 }
 
-export function filterByDate(res, { dateFrom, dateTo }) {
+export function getFiltered(res, filters) {
+  const {
+    date: { dateFrom, dateTo },
+  } = filters;
   newsService.getByDateRange(dateFrom, dateTo).then((news) => {
-    sendResponse(res, { data: news, massage: "filterByDate" });
+    sendResponse(res, { data: news, massage: "getFiltered" });
   });
 }

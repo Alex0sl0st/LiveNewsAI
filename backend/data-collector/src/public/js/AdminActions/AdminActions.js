@@ -12,7 +12,6 @@ class AdminActions {
     this.deleteAllResetIds = document.querySelector("#deleteAllResetIds");
 
     this.summarizeNews = document.querySelector("#summarizeNews");
-    this.filterByDateBtn = document.querySelector("#filterByDateBtn");
 
     this.getAction = (type, payload = {}) => ({
       type,
@@ -24,6 +23,8 @@ class AdminActions {
 
     this.responsesPanel = document.getElementById("responsesPanel");
     this.toggleResponsesBtn = document.getElementById("toggleResponsesBtn");
+
+    this.filterNewsBtn = document.getElementById("filterNewsBtn");
   }
 
   init(handleAction) {
@@ -55,13 +56,8 @@ class AdminActions {
       handleAction(this.getAction("summarizeNews"))
     );
 
-    this.filterByDateBtn.addEventListener("click", () =>
-      handleAction(
-        this.getAction("filterByDate", {
-          dateFrom: getValueFromInput("dateFrom"),
-          dateTo: getValueFromInput("dateTo"),
-        })
-      )
+    this.filterNewsBtn.addEventListener("click", () =>
+      handleAction(this.getAction("getFiltered", this.getNewsFilterValue()))
     );
 
     this.toggleResponsesBtn.addEventListener("click", () => {
@@ -69,6 +65,17 @@ class AdminActions {
       this.toggleResponsesBtn.textContent =
         this.responsesPanel.classList.contains("collapsed") ? "▼" : "▲";
     });
+  }
+
+  getNewsFilterValue() {
+    const newsFilter = {
+      date: { dateFrom: "", dateTo: "" },
+    };
+
+    newsFilter.date.dateFrom = getValueFromInput("dateFrom");
+    newsFilter.date.dateTo = getValueFromInput("dateTo");
+
+    return newsFilter;
   }
 }
 

@@ -26,8 +26,8 @@ export function doNewsAction(req, res) {
       handlers.deleteAllResetIds(res);
     } else if (type === "summarizeNews") {
       handlers.summarize(res, true);
-    } else if (type === "filterByDate") {
-      handlers.filterByDate(res, payload);
+    } else if (type === "getFiltered") {
+      handlers.getFiltered(res, payload);
     } else {
       handlers.unknown(res);
     }
