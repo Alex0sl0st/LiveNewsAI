@@ -1,7 +1,8 @@
 import { query } from "../utils/db.js";
 import { News } from "../models/News.js";
 import { NEWS_COLUMNS as COL, NEWS_TABLE } from "../constants/database.js";
-import { getRandomUuid } from "../utils/getRandomId.js";
+import { isEmptyObject } from "../utils/validation.js";
+import { categoryService } from "./CategoryService.js";
 
 class NewsService {
   constructor(queryFn = query) {
@@ -117,40 +118,54 @@ class NewsService {
     }
   }
 
-  async updateNewsCategory(newsId, mainSlug, relevantSlugs = []) {
-    const mainRes = await this.query(
-      `SELECT id FROM news_categories WHERE slug = $1`,
-      [mainSlug]
+  async updateNewsCategory(
+    newsId,
+    mainSlug,
+    relevantSlugs = [],
+    availableCategories = {}
+  ) {
+    if (isEmptyObject(availableCategories)) {
+      availableCategories = await categoryService.getAvailableNewsCategories();
+
+      if (isEmptyObject(availableCategories)) {
+        console.log(`Categories list is empty`);
+        return null;
+      }
+    }
+
+    const mainCategoryId = Object.keys(availableCategories).find(
+      (id) => availableCategories[id] === mainSlug
     );
-    if (!mainRes.success || mainRes.data.rowCount === 0) {
+
+    if (mainCategoryId === undefined) {
       console.log(`Category not found for slug: ${mainSlug}`);
       return null;
     }
-    const mainCategoryId = mainRes.data.rows[0].id;
 
-    // // 2. Знайти id релевантних категорій
-    // let relevantIds = [];
-    // if (relevantSlugs.length > 0) {
-    //   const relevantRes = await this.query(
-    //     `SELECT id FROM news_categories WHERE slug = ANY($1)`,
-    //     [relevantSlugs]
-    //   );
-    //   relevantIds = relevantRes.data.rows.map((r) => r.id);
-    // }
+    const relevantIds = relevantSlugs
+      .map((slug) => {
+        const id = Object.keys(availableCategories).find(
+          (key) => availableCategories[key] === slug
+        );
+        return id !== undefined ? id : null;
+      })
+      .filter((id) => id !== null);
 
-    // 3. Оновити новину
     const updateRes = await this.query(
       `UPDATE ${NEWS_TABLE}
-       SET ${COL.CATEGORY_ID} = $1,
-           ${COL.RELEVANT_CATEGORIES} = $2
-       WHERE id = $3
-       RETURNING *`,
-      [mainCategoryId, [], newsId]
+         SET ${COL.CATEGORY_ID} = $1,
+             ${COL.RELEVANT_CATEGORIES} = $2
+         WHERE id = $3
+         RETURNING *`,
+      [mainCategoryId, relevantIds, newsId]
     );
 
-    if (!updateRes.success || !(updateRes.data.rowCount > 0)) {
+    if (!updateRes.success || updateRes.data.rowCount === 0) {
       console.log(`Failed to update category for news id=${newsId}`);
+      return null;
     }
+
+    return updateRes.data.rows[0];
   }
 }
 

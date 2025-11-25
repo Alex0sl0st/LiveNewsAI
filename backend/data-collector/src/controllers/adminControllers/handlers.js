@@ -84,7 +84,11 @@ export function summarize(res, saveToDb = false) {
         );
 
         if (saveToDb) {
-          await newsService.updateNewsCategory(item.id, summary.main_category);
+          await newsService.updateNewsCategory(
+            item.id,
+            summary.main_category,
+            summary.relevant_categories
+          );
         }
 
         return summary;

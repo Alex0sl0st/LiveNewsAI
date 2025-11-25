@@ -1,0 +1,15 @@
+export const availableCategories = {
+  0: "world",
+  1: "politics",
+  2: "economy",
+  3: "science",
+  4: "technology",
+  5: "society",
+  6: "law-crime",
+  7: "health",
+  8: "environment",
+  9: "sports",
+  10: "culture-lifestyle",
+  11: "war-security",
+  12: "opinion",
+};

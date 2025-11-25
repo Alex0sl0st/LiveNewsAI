@@ -14,6 +14,7 @@ export const NEWS_COLUMNS = {
 };
 
 export const NEWS_TABLE = "news";
+export const NEWS_CATEGORIES = "news_categories";
 
 export const DEFAULT_IMAGE_OBJECT = {
   url: "",

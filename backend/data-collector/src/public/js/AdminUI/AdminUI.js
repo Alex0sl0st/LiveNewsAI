@@ -2,6 +2,7 @@ import { createExpandableBlock, attachExpandHandlers } from "./helpers.js";
 import { safeFormatTextForHtml } from "../../utils/safeFormatText.js";
 import { Pagination } from "./Pagination/Pagination.js";
 import { renderPaginator } from "./Pagination/paginatorView.js";
+import { getCategorySlug } from "../../utils/getCategorySlug.js";
 
 class AdminUI {
   constructor() {
@@ -53,26 +54,32 @@ class AdminUI {
 
     const { title, ...newsInfo } = news;
     for (const key in newsInfo) {
-      if (key === "content") {
-        let value = news[key];
-        value = value.replace(/\n\n/g, "<br><br>");
+      let value = news[key];
 
-        html += `<p><b>${key}:</b>
-        ${createExpandableBlock(value)}
-      </p>`;
+      if (key === "content") {
+        value = value.replace(/\n\n/g, "<br><br>");
+        value = createExpandableBlock(value);
+      } else if (key === "images") {
+        value = `<span class="imagesData">${JSON.stringify(value)}</span>`;
+        value = createExpandableBlock(value, true);
+      } else if (key === "category_id") {
+        value = `<span>${JSON.stringify(value)} --- ${getCategorySlug(
+          value
+        )}</span>`;
+      } else if (key === "relevant_categories") {
+        const relevantCategoriesSlug = value.map((id) => getCategorySlug(id));
+        value = `<span>${JSON.stringify(value)} --- ${JSON.stringify(
+          relevantCategoriesSlug
+        )}</span>`;
       } else {
-        let value = news[key];
         if (typeof value === "string") {
           value = value.replace(/\n\n/g, "<br><br>");
         } else if (typeof value === "object") {
-          value = `<span class="imagesData">${JSON.stringify(value)}</span>`;
+          value = `<span>${JSON.stringify(value)}</span>`;
         }
-
-        if (key === "images") {
-          value = createExpandableBlock(value, true);
-        }
-        html += `<p ><b>${key}:</b> ${value}</p>`;
       }
+
+      html += `<p ><b>${key}:</b> ${value}</p>`;
     }
 
     return html;

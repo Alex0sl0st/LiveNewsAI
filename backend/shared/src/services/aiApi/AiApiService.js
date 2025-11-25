@@ -4,6 +4,8 @@ import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenAI } from "@google/genai";
 
+import { firstPrompt, improvedP, idP, improvedIdP } from "./prompts.js";
+
 class AiApiService {
   constructor() {
     this.openai = new OpenAI({
@@ -144,14 +146,14 @@ Example:
     // console.log(
     //   this.summarizeRulesText + "\n\n" + `Summarize the following text:`
     // );
+
+    // this.summarizeTestRulesText
+    // firstPrompt
     try {
+      const prompt = improvedIdP;
       const response = await this.gemini.models.generateContent({
         model: "gemini-2.5-flash-lite",
-        contents:
-          this.summarizeTestRulesText +
-          "\n\nARTICLE:\n" +
-          newsText +
-          "\n\nReturn only the JSON result as specified above.",
+        contents: prompt + "\n\nARTICLE:\n" + newsText,
       });
 
       return response.text.trim();
