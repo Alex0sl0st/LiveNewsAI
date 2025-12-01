@@ -85,9 +85,9 @@ class AdminUI {
     return html;
   }
 
-  renderPanelContent(data, massage) {
+  renderPanelContent(data, message) {
     let dataToRender = data;
-    if (massage === "summarize") {
+    if (message === "summarize") {
       dataToRender = data.reduce((acc, cur, index) => {
         acc += JSON.stringify(cur);
         acc += `\n\n${index} ---------------------------\n\n`;

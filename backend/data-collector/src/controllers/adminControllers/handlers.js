@@ -8,7 +8,7 @@ function sendResponse(
     data = [],
     success = true,
     resType = "data",
-    massage = "",
+    message = "",
     toDisplayOnPanel = false,
   }
 ) {
@@ -16,26 +16,26 @@ function sendResponse(
     success,
     data,
     resType,
-    massage,
+    message,
     toDisplayOnPanel,
   });
 }
 
 export function getAll(res) {
   newsService.getAll().then((news) => {
-    sendResponse(res, { data: news, massage: "getAll" });
+    sendResponse(res, { data: news, message: "getAll" });
   });
 }
 
 export function deleteDuplicates(res) {
   newsService.deleteDuplicates().then(() => {
-    sendResponse(res, { massage: "Delete Duplicates", resType: "result" });
+    sendResponse(res, { message: "Delete Duplicates", resType: "result" });
   });
 }
 
 export function deleteAllResetIds(res) {
   newsService.deleteAllResetIds().then(() => {
-    sendResponse(res, { massage: "deleteAllResetIds", resType: "result" });
+    sendResponse(res, { message: "deleteAllResetIds", resType: "result" });
   });
 }
 
@@ -44,25 +44,25 @@ export function unknown(res) {
     news: [],
     success: false,
     resType: "result",
-    massage: "Something went wrong",
+    message: "Something went wrong",
   });
 }
 
 export function sourceBBC(res) {
   newsManagerService.createNews(newsSourcesConfig.bbc.name).then(() => {
-    sendResponse(res, { massage: "sourceBBC", resType: "result" });
+    sendResponse(res, { message: "sourceBBC", resType: "result" });
   });
 }
 
 export function sourceDW(res) {
   newsManagerService.createNews(newsSourcesConfig.dw.name).then(() => {
-    sendResponse(res, { massage: "sourceDW", resType: "result" });
+    sendResponse(res, { message: "sourceDW", resType: "result" });
   });
 }
 
 export function sourceAP(res) {
   newsManagerService.createNews(newsSourcesConfig.ap.name, true).then(() => {
-    sendResponse(res, { massage: "sourceAP", resType: "result" });
+    sendResponse(res, { message: "sourceAP", resType: "result" });
   });
 }
 
@@ -96,7 +96,7 @@ export function summarize(res, saveToDb = false) {
     );
 
     sendResponse(res, {
-      massage: "summarize",
+      message: "summarize",
       resType: "data",
       toDisplayOnPanel: true,
       data: summariesArray,
@@ -105,10 +105,7 @@ export function summarize(res, saveToDb = false) {
 }
 
 export function getFiltered(res, filters) {
-  const {
-    date: { dateFrom, dateTo },
-  } = filters;
-  newsService.getByDateRange(dateFrom, dateTo).then((news) => {
-    sendResponse(res, { data: news, massage: "getFiltered" });
+  newsService.getFilteredNews(filters).then((news) => {
+    sendResponse(res, { data: news, message: "getFiltered" });
   });
 }

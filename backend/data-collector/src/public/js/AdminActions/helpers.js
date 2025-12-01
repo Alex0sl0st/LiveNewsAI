@@ -22,3 +22,11 @@ export function initActionButtons(
 export function getValueFromInput(id) {
   return document.getElementById(id).value;
 }
+
+export function getSelectedItems(selectList) {
+  const selected = Array.from(selectList.querySelectorAll("input:checked")).map(
+    (i) => i.value
+  );
+
+  return selected;
+}

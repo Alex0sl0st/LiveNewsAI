@@ -36,10 +36,17 @@
 
     <div id="filterNewsPanel" class="filterNewsPanel">
       <button id="filterNewsBtn" class="filterBtn">Get Filtered News</button>
-      <div class="newsFilters">
+      <div class="newsFiltersContainer">
         <div id="dateRangePanel" class="dateRangePanel">
           <input id="dateFrom" type="date" class="dateInput" />
           <input id="dateTo" type="date" class="dateInput" />
+        </div>
+
+        <div class="multiSelectContainer">
+          <div id="categoryFilter" class="multiSelectInput">
+            Select categories
+          </div>
+          <div id="categoriesList" class="multiSelectList"></div>
         </div>
       </div>
     </div>

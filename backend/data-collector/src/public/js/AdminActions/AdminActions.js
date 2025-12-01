@@ -2,7 +2,9 @@ import {
   getAllButtonsInContainer,
   initActionButtons,
   getValueFromInput,
+  getSelectedItems,
 } from "./helpers.js";
+import { availableCategories } from "../constants/newsCategories.js";
 
 class AdminActions {
   constructor() {
@@ -25,6 +27,9 @@ class AdminActions {
     this.toggleResponsesBtn = document.getElementById("toggleResponsesBtn");
 
     this.filterNewsBtn = document.getElementById("filterNewsBtn");
+
+    this.categoryFilter = document.getElementById("categoryFilter");
+    this.categoriesListEl = document.getElementById("categoriesList");
   }
 
   init(handleAction) {
@@ -65,15 +70,48 @@ class AdminActions {
       this.toggleResponsesBtn.textContent =
         this.responsesPanel.classList.contains("collapsed") ? "▼" : "▲";
     });
+
+    this.initMultiSelect(this.categoryFilter, this.categoriesListEl, [
+      ...Object.values(availableCategories),
+      "noCategory",
+      "unmappedCategory",
+    ]);
+  }
+
+  initMultiSelect(input, selectListEl, options = []) {
+    options.forEach((cat) => {
+      selectListEl.innerHTML += `
+        <label class="multiSelectItem">
+          <input type="checkbox" value="${cat}">
+          <span>${cat}</span>
+        </label>
+      `;
+    });
+
+    input.addEventListener("click", () => {
+      selectListEl.style.display =
+        selectListEl.style.display === "block" ? "none" : "block";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".multiSelectContainer")) {
+        selectListEl.style.display = "none";
+      }
+    });
   }
 
   getNewsFilterValue() {
     const newsFilter = {
       date: { dateFrom: "", dateTo: "" },
+      mainCategories: [],
     };
 
     newsFilter.date.dateFrom = getValueFromInput("dateFrom");
     newsFilter.date.dateTo = getValueFromInput("dateTo");
+
+    newsFilter.mainCategories = getSelectedItems(this.categoriesListEl);
+
+    console.log(newsFilter);
 
     return newsFilter;
   }

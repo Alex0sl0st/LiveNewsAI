@@ -247,3 +247,54 @@ h1 {
   align-items: center;
   gap: 15px;
 }
+
+.newsFiltersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.multiSelectContainer {
+  position: relative;
+  width: 260px;
+}
+
+.multiSelectInput {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px 14px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #222;
+  font-size: 15px;
+}
+
+.multiSelectList {
+  display: none;
+  position: absolute;
+  top: 105%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.multiSelectItem {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #222;
+}
+
+.multiSelectItem:hover {
+  background: rgba(102, 126, 234, 0.15);
+}

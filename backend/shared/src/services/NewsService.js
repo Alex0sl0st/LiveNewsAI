@@ -1,7 +1,6 @@
 import { query } from "../utils/db.js";
 import { News } from "../models/News.js";
 import { NEWS_COLUMNS as COL, NEWS_TABLE } from "../constants/database.js";
-import { isEmptyObject } from "../utils/validation.js";
 import { categoryService } from "./CategoryService.js";
 
 class NewsService {
@@ -96,45 +95,104 @@ class NewsService {
     }
   }
 
-  async getByDateRange(fromDate, toDate) {
-    if (!fromDate || !toDate) {
-      console.log("❌ Missing fromDate or toDate");
-      return [];
-    }
+  async getFilteredNews(filters = {}, categoriesCache = {}) {
+    const { date = {}, mainCategories: rawMainCategories = [] } = filters;
 
-    const result = await this.query(
-      `
-      SELECT * FROM ${NEWS_TABLE}
-      WHERE ${COL.PUBLISHED_AT} BETWEEN $1 AND $2
-      ORDER BY ${COL.PUBLISHED_AT} DESC
-      `,
-      [fromDate + " 00:00:00", toDate + " 23:59:59"]
+    // Check for special filters
+    const requestNoCategory = rawMainCategories.includes("noCategory");
+    const requestUnmapped = rawMainCategories.includes("unmappedCategory");
+
+    const mainCategories = rawMainCategories.filter(
+      (s) => s !== "noCategory" && s !== "unmappedCategory"
     );
 
-    if (result.success) {
-      return result.data.rows.map((row) => new News(row));
-    } else {
+    const availableCategories =
+      await categoryService.getAvailableNewsCategories(categoriesCache);
+    const allValidCategoryIds = await categoryService.getAvailableCategoriesIds(
+      availableCategories
+    );
+
+    const mainCategoriesId = await categoryService.convertSlugsToIds(
+      mainCategories,
+      availableCategories
+    );
+
+    const whereParts = [];
+    const values = [];
+    let paramIndex = 1;
+
+    // === DATE FILTER ===
+    if (date.dateFrom) {
+      whereParts.push(`${COL.PUBLISHED_AT} >= $${paramIndex}`);
+      values.push(date.dateFrom + " 00:00:00");
+      paramIndex++;
+    }
+
+    if (date.dateTo) {
+      whereParts.push(`${COL.PUBLISHED_AT} <= $${paramIndex}`);
+      values.push(date.dateTo + " 23:59:59");
+      paramIndex++;
+    }
+
+    // === CATEGORY FILTERS (OR logic inside group) ===
+    const categoryConditions = [];
+
+    // === MAIN CATEGORIES (by IDs) ===
+    if (mainCategoriesId.length > 0) {
+      categoryConditions.push(`${COL.CATEGORY_ID} = ANY($${paramIndex})`);
+      values.push(mainCategoriesId);
+      paramIndex++;
+    }
+
+    // --- CATEGORY FILTER: noCategory (NULL) ---
+    if (requestNoCategory) {
+      categoryConditions.push(`${COL.CATEGORY_ID} IS NULL`);
+    }
+
+    // --- CATEGORY FILTER: unmappedCategory ---
+    if (requestUnmapped) {
+      categoryConditions.push(
+        `(${COL.CATEGORY_ID} IS NOT NULL AND ${
+          COL.CATEGORY_ID
+        } NOT IN (${allValidCategoryIds.join(",")}))`
+      );
+    }
+
+    if (categoryConditions.length > 0) {
+      whereParts.push(`(${categoryConditions.join(" OR ")})`);
+    }
+
+    // === BUILD WHERE CLAUSE ===
+    const whereSQL =
+      whereParts.length > 0 ? `WHERE ${whereParts.join(" AND ")}` : "";
+
+    const querySQL = `
+      SELECT * FROM ${NEWS_TABLE}
+      ${whereSQL}
+      ORDER BY ${COL.PUBLISHED_AT} DESC
+    `;
+
+    const result = await this.query(querySQL, values);
+
+    if (!result.success) {
+      console.log("❌ Failed to fetch filtered news");
       return [];
     }
+
+    return result.data.rows.map((row) => new News(row));
   }
 
   async updateNewsCategory(
     newsId,
     mainSlug,
     relevantSlugs = [],
-    availableCategories = {}
+    categoriesCache = {}
   ) {
-    if (isEmptyObject(availableCategories)) {
-      availableCategories = await categoryService.getAvailableNewsCategories();
-
-      if (isEmptyObject(availableCategories)) {
-        console.log(`Categories list is empty`);
-        return null;
-      }
-    }
-
-    const mainCategoryId = Object.keys(availableCategories).find(
-      (id) => availableCategories[id] === mainSlug
+    const availableCategories =
+      await categoryService.getAvailableNewsCategories(categoriesCache);
+    const mainCategoryId = await categoryService.convertSlugToId(
+      mainSlug,
+      availableCategories
     );
 
     if (mainCategoryId === undefined) {
@@ -142,14 +200,10 @@ class NewsService {
       return null;
     }
 
-    const relevantIds = relevantSlugs
-      .map((slug) => {
-        const id = Object.keys(availableCategories).find(
-          (key) => availableCategories[key] === slug
-        );
-        return id !== undefined ? id : null;
-      })
-      .filter((id) => id !== null);
+    const relevantIds = await categoryService.convertSlugsToIds(
+      relevantSlugs,
+      availableCategories
+    );
 
     const updateRes = await this.query(
       `UPDATE ${NEWS_TABLE}

@@ -5,14 +5,14 @@ import { adminActions } from "./AdminActions/AdminActions.js";
 function handleAction(action) {
   const reqTime = Date.now();
   postNews(action).then(
-    ({ data, success, resType, massage, toDisplayOnPanel }) => {
-      adminUI.addLastMessage(massage);
+    ({ data, success, resType, message, toDisplayOnPanel }) => {
+      adminUI.addLastMessage(message);
       adminUI.addLastAnsweringTime((Date.now() - reqTime) / 1000);
 
       if (!success) return;
 
       if (toDisplayOnPanel) {
-        adminUI.renderPanelContent(data, massage);
+        adminUI.renderPanelContent(data, message);
       } else if (resType === "data") {
         adminUI.displayNews(data);
       }
