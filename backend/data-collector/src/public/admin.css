@@ -298,3 +298,8 @@ h1 {
 .multiSelectItem:hover {
   background: rgba(102, 126, 234, 0.15);
 }
+
+.filterActions {
+  display: flex;
+  gap: 12px;
+}
