@@ -3,8 +3,10 @@ import {
   initActionButtons,
   getValueFromInput,
   getSelectedItems,
+  deselectAll,
 } from "./helpers.js";
 import { availableCategories } from "../constants/newsCategories.js";
+import { newsSources } from "../constants/newsSources.js";
 
 class AdminActions {
   constructor() {
@@ -31,6 +33,9 @@ class AdminActions {
 
     this.categoryFilter = document.getElementById("categoryFilter");
     this.categoriesListEl = document.getElementById("categoriesList");
+
+    this.sourceFilter = document.getElementById("sourceFilter");
+    this.sourcesListEl = document.getElementById("sourcesList");
   }
 
   initMultiSelect(input, selectListEl, options = []) {
@@ -59,12 +64,15 @@ class AdminActions {
     const newsFilter = {
       date: { dateFrom: "", dateTo: "" },
       mainCategories: [],
+      sources: [],
     };
 
     newsFilter.date.dateFrom = getValueFromInput("dateFrom");
     newsFilter.date.dateTo = getValueFromInput("dateTo");
 
     newsFilter.mainCategories = getSelectedItems(this.categoriesListEl);
+
+    newsFilter.sources = getSelectedItems(this.sourcesListEl);
 
     return newsFilter;
   }
@@ -73,13 +81,13 @@ class AdminActions {
     document.getElementById("dateFrom").value = "";
     document.getElementById("dateTo").value = "";
 
-    const checkboxes = this.categoriesListEl.querySelectorAll(
-      "input[type='checkbox']"
-    );
-    checkboxes.forEach((cb) => (cb.checked = false));
-
+    deselectAll(this.categoriesListEl);
     this.categoryFilter.textContent = "Select categories";
     this.categoriesListEl.style.display = "none";
+
+    deselectAll(this.sourcesListEl);
+    this.sourceFilter.textContent = "Select sources";
+    this.sourcesListEl.style.display = "none";
   }
 
   init(handleAction) {
@@ -129,6 +137,10 @@ class AdminActions {
       ...Object.values(availableCategories),
       "noCategory",
       "unmappedCategory",
+    ]);
+
+    this.initMultiSelect(this.sourceFilter, this.sourcesListEl, [
+      ...newsSources,
     ]);
   }
 }

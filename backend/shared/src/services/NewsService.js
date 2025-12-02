@@ -96,7 +96,11 @@ class NewsService {
   }
 
   async getFilteredNews(filters = {}, categoriesCache = {}) {
-    const { date = {}, mainCategories: rawMainCategories = [] } = filters;
+    const {
+      date = {},
+      mainCategories: rawMainCategories = [],
+      sources = [],
+    } = filters;
 
     // Check for special filters
     const requestNoCategory = rawMainCategories.includes("noCategory");
@@ -131,6 +135,13 @@ class NewsService {
     if (date.dateTo) {
       whereParts.push(`${COL.PUBLISHED_AT} <= $${paramIndex}`);
       values.push(date.dateTo + " 23:59:59");
+      paramIndex++;
+    }
+
+    // === SOURCES FILTER ===
+    if (sources.length > 0) {
+      whereParts.push(`${COL.SOURCE_NAME} = ANY($${paramIndex})`);
+      values.push(sources);
       paramIndex++;
     }
 
