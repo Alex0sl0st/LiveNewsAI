@@ -1,56 +1,22 @@
-import { getShortText } from "../../utils/getShortText.js";
-import { getRandomUuid } from "../../utils/getRandomId.js";
+import { expandableContent } from "./ExpandableContent/ExpandableContent.js";
 
-export function createExpandableBlock(
-  fullContent,
-  isHtml = false,
-  shortContent = ""
-) {
-  const contentId = `expand-${getRandomUuid()}`;
-  const encodedFull = encodeURIComponent(fullContent);
+export function attachNewsActionHandlers(root, newsId, { onDelete }) {
+  const actionsContainer = root.querySelector(".singleNewsActionsContainer");
+  const initialExpands = expandableContent.setAll(actionsContainer, true);
 
-  const displayShort = isHtml
-    ? shortContent
-    : shortContent || getShortText(fullContent);
+  const deleteBtn = actionsContainer.querySelector(".deleteNews");
+  deleteBtn.addEventListener("click", () => {
+    onDelete(newsId);
+  });
 
-  const encodedShort = encodeURIComponent(displayShort);
-
-  return `
-    <button 
-      class="expandBtn" 
-      data-expand-target="${contentId}" 
-      data-expand-full="${encodedFull}"
-      data-expand-short="${encodedShort}"
-    >▼</button><br>
-
-    <span id="${contentId}" class="expand-content">
-      ${displayShort}
-    </span>
-  `;
+  expandableContent.restoreStates(initialExpands);
 }
 
-export function attachExpandHandlers(root) {
-  const buttons = root.querySelectorAll(".expandBtn");
+export function createButton(text, classes, onClick = null) {
+  const btn = document.createElement("button");
+  btn.textContent = text;
+  btn.className = classes;
+  btn.addEventListener("click", onClick);
 
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const targetId = btn.dataset.expandTarget;
-
-      const fullContent = decodeURIComponent(btn.dataset.expandFull);
-      const shortContent = decodeURIComponent(btn.dataset.expandShort);
-
-      const contentEl = root.querySelector(`#${targetId}`);
-      const shouldExpand = btn.textContent === "▼";
-
-      if (shouldExpand) {
-        // EXPAND
-        contentEl.innerHTML = fullContent;
-        btn.textContent = "▲";
-      } else {
-        // COLLAPSE
-        contentEl.innerHTML = shortContent;
-        btn.textContent = "▼";
-      }
-    });
-  });
+  return btn;
 }

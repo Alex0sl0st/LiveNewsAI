@@ -1,4 +1,5 @@
-import { createExpandableBlock, attachExpandHandlers } from "./helpers.js";
+import { attachNewsActionHandlers } from "./helpers.js";
+import { expandableContent } from "./ExpandableContent/ExpandableContent.js";
 import { safeFormatTextForHtml } from "../../utils/safeFormatText.js";
 import { Pagination } from "./Pagination/Pagination.js";
 import { renderPaginator } from "./Pagination/paginatorView.js";
@@ -48,7 +49,11 @@ class AdminUI {
       imagesBlock += `<img class="newsImage" src="${image.url}" alt="${image.caption}">`;
     });
 
-    html += createExpandableBlock(imagesBlock, true, "Images...");
+    html += expandableContent.create({
+      fullContent: imagesBlock,
+      isHtml: true,
+      shortContent: "Images...",
+    });
 
     html += `<h3><strong>Title:</strong> ${news.title}</h3>`;
 
@@ -58,10 +63,10 @@ class AdminUI {
 
       if (key === "content") {
         value = value.replace(/\n\n/g, "<br><br>");
-        value = createExpandableBlock(value);
+        value = expandableContent.create({ fullContent: value });
       } else if (key === "images") {
         value = `<span class="imagesData">${JSON.stringify(value)}</span>`;
-        value = createExpandableBlock(value, true);
+        value = expandableContent.create({ fullContent: value, isHtml: true });
       } else if (key === "category_id") {
         value = `<span>${JSON.stringify(value)} --- ${getCategorySlug(
           value
@@ -81,6 +86,20 @@ class AdminUI {
 
       html += `<p ><b>${key}:</b> ${value}</p>`;
     }
+
+    const actionsBlockHTML = `
+    <div class="singleNewsActions">
+      <button class="deleteNews" data-id="${news.id}">Delete</button>
+    </div>
+  `;
+    html += `<div class="singleNewsActionsContainer">${expandableContent.create(
+      {
+        fullContent: actionsBlockHTML,
+        isCollapse: false,
+        isHtml: true,
+        shortContent: "Actions",
+      }
+    )}</div>`;
 
     return html;
   }
@@ -120,7 +139,11 @@ class AdminUI {
       );
       container.appendChild(block);
 
-      attachExpandHandlers(block);
+      attachNewsActionHandlers(block, news.id, {
+        onDelete: () => console.log(news.id),
+      });
+
+      expandableContent.attachHandlers(block);
     });
   }
 
