@@ -248,6 +248,31 @@ class NewsService {
 
     return updateRes.data.rows[0];
   }
+
+  async updateNewsSummary(newsId, summary) {
+    if (!summary || typeof summary !== "string") {
+      console.log("❌ Invalid summary provided");
+      return null;
+    }
+
+    const updateRes = await this.query(
+      `UPDATE ${NEWS_TABLE}
+         SET ${COL.SUMMARY} = $1
+         WHERE ${COL.ID} = $2
+         RETURNING *`,
+      [summary, newsId]
+    );
+
+    if (!updateRes.success || updateRes.data.rowCount === 0) {
+      console.log(
+        `❌ Failed to update summary for news id=${newsId}:`,
+        updateRes.err
+      );
+      return null;
+    }
+
+    return new News(updateRes.data.rows[0]);
+  }
 }
 
 export const newsService = new NewsService();

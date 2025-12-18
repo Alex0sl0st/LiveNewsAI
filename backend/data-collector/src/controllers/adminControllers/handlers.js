@@ -95,6 +95,8 @@ export function summarize(res, saveToDb = false) {
             summary.main_category,
             summary.relevant_categories
           );
+
+          await newsService.updateNewsSummary(item.id, summary.summary);
         }
 
         return summary;

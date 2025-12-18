@@ -65,6 +65,9 @@ class AdminUI {
       if (key === "content") {
         value = value.replace(/\n\n/g, "<br><br>");
         value = expandableContent.create({ fullContent: value });
+      } else if (key === "summary") {
+        value = value ? value.replace(/\n\n/g, "<br><br>") : "null";
+        value = expandableContent.create({ fullContent: value });
       } else if (key === "images") {
         value = `<span class="imagesData">${JSON.stringify(value)}</span>`;
         value = expandableContent.create({ fullContent: value, isHtml: true });
