@@ -2,14 +2,16 @@ import { expandableContent } from "./ExpandableContent/ExpandableContent.js";
 
 export function attachNewsActionHandlers(root, newsId, { onDelete }) {
   const actionsContainer = root.querySelector(".singleNewsActionsContainer");
-  const initialExpands = expandableContent.setAll(actionsContainer, true);
+  // const initialExpands = expandableContent.setAll(actionsContainer, true);
 
   const deleteBtn = actionsContainer.querySelector(".deleteNews");
+
   deleteBtn.addEventListener("click", () => {
+    console.log(`${newsId} was deleted`);
     onDelete(newsId);
   });
 
-  expandableContent.restoreStates(initialExpands);
+  // expandableContent.restoreStates(initialExpands);
 }
 
 export function createButton(text, classes, onClick = null) {

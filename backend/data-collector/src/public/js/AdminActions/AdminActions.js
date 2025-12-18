@@ -10,6 +10,8 @@ import { newsSources } from "../constants/newsSources.js";
 
 class AdminActions {
   constructor() {
+    this.handleAction = () => console.log("AdminActions should be initiated");
+
     this.getAll = document.querySelector("#getAll");
 
     this.deleteDuplicates = document.querySelector("#deleteDuplicates");
@@ -36,6 +38,17 @@ class AdminActions {
 
     this.sourceFilter = document.getElementById("sourceFilter");
     this.sourcesListEl = document.getElementById("sourcesList");
+  }
+
+  deleteNews(ids, paginator = null) {
+    const idsArray = Array.isArray(ids) ? ids : [ids];
+    this.handleAction(this.getAction("deleteNews", { ids }));
+
+    if (paginator) {
+      paginator.setItems(
+        paginator.items.filter((item) => !idsArray.includes(item.id))
+      );
+    }
   }
 
   initMultiSelect(input, selectListEl, options = []) {
@@ -91,36 +104,40 @@ class AdminActions {
   }
 
   init(handleAction) {
+    this.handleAction = handleAction;
+
     initActionButtons(
       this.sourceButtons,
       "source",
       this.getAction,
-      handleAction
+      this.handleAction
     );
     initActionButtons(
       this.additionalToolsButtons,
       "extraTool",
       this.getAction,
-      handleAction
+      this.handleAction
     );
 
     this.getAll.addEventListener("click", () =>
-      handleAction(this.getAction("getAll"))
+      this.handleAction(this.getAction("getAll"))
     );
 
     this.deleteDuplicates.addEventListener("click", () =>
-      handleAction(this.getAction("deleteDuplicates"))
+      this.handleAction(this.getAction("deleteDuplicates"))
     );
     this.deleteAllResetIds.addEventListener("click", () =>
-      handleAction(this.getAction("deleteAllResetIds"))
+      this.handleAction(this.getAction("deleteAllResetIds"))
     );
 
     this.summarizeNews.addEventListener("click", () =>
-      handleAction(this.getAction("summarizeNews"))
+      this.handleAction(this.getAction("summarizeNews"))
     );
 
     this.filterNewsBtn.addEventListener("click", () =>
-      handleAction(this.getAction("getFiltered", this.getNewsFilterValue()))
+      this.handleAction(
+        this.getAction("getFiltered", this.getNewsFilterValue())
+      )
     );
 
     this.clearFiltersBtn.addEventListener("click", () => {

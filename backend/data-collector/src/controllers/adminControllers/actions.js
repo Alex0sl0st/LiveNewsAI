@@ -28,6 +28,8 @@ export function doNewsAction(req, res) {
       handlers.summarize(res, true);
     } else if (type === "getFiltered") {
       handlers.getFiltered(res, payload);
+    } else if (type === "deleteNews") {
+      handlers.deleteNews(res, payload.ids);
     } else {
       handlers.unknown(res);
     }

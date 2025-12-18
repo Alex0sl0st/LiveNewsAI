@@ -85,13 +85,29 @@ class NewsService {
     }
   }
 
-  async delete(id) {
-    const result = await this.query("DELETE FROM news WHERE id = $1", [id]);
+  async delete(ids) {
+    const idsArray = Array.isArray(ids) ? ids : [ids];
+
+    if (idsArray.length === 0) {
+      return { success: false, deletedCount: 0 };
+    }
+
+    const result = await this.query(
+      "DELETE FROM news WHERE id = ANY($1) RETURNING id",
+      [idsArray]
+    );
 
     if (result.success) {
-      return true;
+      return {
+        success: true,
+        deletedCount: result.data.rowCount,
+      };
     } else {
-      return false;
+      console.log("❌ Failed to delete news");
+      return {
+        success: false,
+        deletedCount: 0,
+      };
     }
   }
 

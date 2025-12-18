@@ -39,6 +39,12 @@ export function deleteAllResetIds(res) {
   });
 }
 
+export function deleteNews(res, ids) {
+  newsService.delete(ids).then(() => {
+    sendResponse(res, { message: "deleteNews", resType: "result" });
+  });
+}
+
 export function unknown(res) {
   sendResponse(res, {
     news: [],

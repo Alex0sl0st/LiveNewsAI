@@ -4,6 +4,7 @@ import { safeFormatTextForHtml } from "../../utils/safeFormatText.js";
 import { Pagination } from "./Pagination/Pagination.js";
 import { renderPaginator } from "./Pagination/paginatorView.js";
 import { getCategorySlug } from "../../utils/getCategorySlug.js";
+import { adminActions } from "../AdminActions/AdminActions.js";
 
 class AdminUI {
   constructor() {
@@ -92,14 +93,16 @@ class AdminUI {
       <button class="deleteNews" data-id="${news.id}">Delete</button>
     </div>
   `;
-    html += `<div class="singleNewsActionsContainer">${expandableContent.create(
-      {
-        fullContent: actionsBlockHTML,
-        isCollapse: false,
-        isHtml: true,
-        shortContent: "Actions",
-      }
-    )}</div>`;
+    // html += `<div class="singleNewsActionsContainer">${expandableContent.create(
+    //   {
+    //     fullContent: actionsBlockHTML,
+    //     isCollapse: false,
+    //     isHtml: true,
+    //     shortContent: "Actions",
+    //   }
+    // )}</div>`;
+
+    html += `<div class="singleNewsActionsContainer">${actionsBlockHTML}</div>`;
 
     return html;
   }
@@ -140,7 +143,7 @@ class AdminUI {
       container.appendChild(block);
 
       attachNewsActionHandlers(block, news.id, {
-        onDelete: () => console.log(news.id),
+        onDelete: (id) => adminActions.deleteNews(id, this.newsPagination),
       });
 
       expandableContent.attachHandlers(block);
